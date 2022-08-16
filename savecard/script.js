@@ -28,7 +28,7 @@ if (getParameterByName("Type")  == "Transit") {
 document.querySelector('.studatas .Name .value span').innerText = getParameterByName("Name") ? getParameterByName("Name")  : 'CHAN Siu-ming （陳小明）'
 document.querySelector('.studatas .SID .value span').innerText = getParameterByName("SID") ? getParameterByName("SID")  : '1155125528'
 document.querySelector('.studatas .Major .value span').innerText = getParameterByName("Major") ? getParameterByName("Major")  : 'B.A. in Fine Arts'
-document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : '31/7/2022'
+document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString()
 
 function resizecard() {
     let size = window.innerWidth * 0.8 / 560;

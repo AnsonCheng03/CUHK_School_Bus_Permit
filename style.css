@@ -143,6 +143,8 @@ button {
     min-width: 560px;
     height: 356px;
 
+    background: rgba(0,0,0,0);
+
     border: 1px solid #4285F4;
     border-radius: 20px;
     transform-origin: center;
