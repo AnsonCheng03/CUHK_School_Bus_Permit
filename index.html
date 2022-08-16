@@ -4,6 +4,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     <link href="style.css" rel="stylesheet">
     <script src="script.js" defer></script>
+    <link rel="preload" as="image" href="getcard/images/schbus_d.png">
+    <link rel="preload" as="image" href="getcard/images/schbus_l.png">
+    <link rel="preload" as="image" href="getcard/images/CUHK.png">
 </head>
 
 <body>
@@ -18,10 +21,10 @@
                     <label for="admin">轉堂校巴</label>
                 </div>
                 <br>
-                <input placeholder="CHAN Siu-ming （陳小明）" name="Name" type="text"></input>
-                <input placeholder="1155125528" name="SID" type="text"></input><br>
-                <input placeholder="B.A. in Fine Arts" name="Major" type="text"></input>
-                <input placeholder="31/7/2022" name="Valid" type="text"></input><br>
+                <input placeholder="CHAN Siu-ming （陳小明）" name="Name" type="text" maxlength="30"></input>
+                <input placeholder="1155125528" name="SID" type="number" min="1000000000" max="1500000000"></input><br>
+                <input placeholder="B.A. in Fine Arts" name="Major" type="text" maxlength="50"></input>
+                <input placeholder="31/7/2022" name="Valid" type="text" maxlength="10"></input><br>
                 <button type="submit" name="requestmode">獲取校巴證</button>
             </form>
 
