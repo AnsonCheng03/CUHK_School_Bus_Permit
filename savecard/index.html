@@ -5,7 +5,6 @@
     <link href="../getcard/style.css" rel="stylesheet">
     <script src="script.js" defer></script>
     <style>
-
         body {
             display: flex;
             margin: 0;
@@ -30,8 +29,43 @@
             min-height: 356px;
         }
 
-        ::selection { background: transparent; } 
-        ::-moz-selection { background: transparent; }
+        .share {
+            position: absolute;
+            bottom: 1vh;
+            left: 0;
+            width: 100%;
+            z-index: 9;
+        }
+
+        button {
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #4285F4;
+            color: #4285F4;
+            border-radius: 5px;
+            cursor: pointer;
+            height: 50px;
+            width: 70%;
+            transition: all 250ms;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            vertical-align: baseline;
+        }
+
+        .hidebtn {
+            width: 10%;
+        }
+
+
+
+        ::selection {
+            background: transparent;
+        }
+
+        ::-moz-selection {
+            background: transparent;
+        }
     </style>
 </head>
 
@@ -114,7 +148,10 @@
             </div>
         </div>
     </div>
-
+    <div class="share">
+        <button class="sharebtn">分享</button>
+        <button class="hidebtn">隱藏</button>
+    </div>
 
 </body>
 
