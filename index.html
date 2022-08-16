@@ -2,108 +2,37 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <link href="../getcard/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
     <script src="script.js" defer></script>
-    <style>
-        body {
-            display: flex;
-            min-height: 600px;
-            min-width: 396px;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-            height: 100%;
-            width: 100%;
-
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 100%;
-        }
-    </style>
 </head>
 
 <body>
-    <div class="card">
-        <div class="details">
-            <div class="header">
-                <div class="logo">
-                    <img src="../getcard/images/CUHK.png"></img>
+    <div class="center">
+        <div class="content">
+            <h1>校巴證生成器</h1>
+            <form onsubmit="return submitform(this, '.card', 'getcard')" method="get">
+                <div class="switch-toggle">
+                    <input id="student" name="Type" type="radio" value="Transit" checked>
+                    <label for="student">穿梭校巴</label>
+                    <input id="admin" name="Type" type="radio" value="Lesson">
+                    <label for="admin">轉堂校巴</label>
                 </div>
-                <div class="schname">
-                    <span>香港中文大學</span>
-                    <span> The Chinese University of Hong Kong</span>
-                </div>
-                <div class="hinttxt">
-                    <span>落車前請按鐘一次</span>
-                    <span>To Stop Press The Bell Once</span>
-                </div>
-            </div>
-            <div class="cardname">
-                <h1></h1>
-                <h2></h2>
-            </div>
-            <div class="routeavil">
-                <div class="desctxt">
-                    <span>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span>
-                    <span>The Permit Holder is allowed to ride on the following routes</span>
-                </div>
-                <div class="routes">
-                    <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">1</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">2</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #a4cc39 0%, #318761 100%);">3</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #f1a63b 0%, #e75a24 100%);">4</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #ffe3a8 0%, #ffc55A 100%);">8</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #d1b4d5 0%, #7961a8 100%);">N</span>
-                    <span class="transit" style="background: linear-gradient(90deg, #896391 0%, #453087 100%);">H</span>
-                    <span class="lesson" style="background: linear-gradient(90deg, #c2d6ea 0%, #29a1d8 100%);">5</span>
-                    <span class="lesson" style="background: linear-gradient(90deg, #7c8644 0%, #585823 100%);">6A</span>
-                    <span class="lesson" style="background: linear-gradient(90deg, #4f88c1 0%, #3f438f 100%);">6B</span>
-                    <span class="lesson" style="background: linear-gradient(90deg, #c2c2c2 0%, #666666 100%);">7</span>
+                <br>
+                <input placeholder="CHAN Siu-ming （陳小明）" name="Name" type="text"></input>
+                <input placeholder="1155125528" name="SID" type="text"></input><br>
+                <input placeholder="B.A. in Fine Arts" name="Major" type="text"></input>
+                <input placeholder="31/7/2022" name="Valid" type="text"></input><br>
+                <button type="submit" name="requestmode">獲取校巴證</button>
+            </form>
+
+            <div class="cardwrapper">
+                <div class="card">
+                    <a style="font-size: 1.5rem;">請輸入資料</a>
                 </div>
             </div>
-            <div class="studatas">
-                <div class="Name">
-                    <div class="desc">
-                        <span>學生姓名</span>
-                        <span>Name</span>
-                    </div>
-                    <div class="value">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="SID">
-                    <div class="desc">
-                        <span>學生編號</span>
-                        <span>Student ID</span>
-                    </div>
-                    <div class="value">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="Major">
-                    <div class="desc">
-                        <span>主修科目</span>
-                        <span>Major</span>
-                    </div>
-                    <div class="value">
-                        <span></span>
-                    </div>
-                </div>
-                <div class="Valid">
-                    <div class="desc">
-                        <span>有效期至</span>
-                        <span>Valid Until</span>
-                    </div>
-                    <div class="value">
-                        <span></span>
-                    </div>
-                </div>
-            </div>
+            <button class="download" type="button">儲存校巴證</button>
         </div>
     </div>
-
-
 </body>
 
 </html>
