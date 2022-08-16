@@ -36,15 +36,16 @@ document.querySelector('.studatas .SID .value span').innerText = getParameterByN
 document.querySelector('.studatas .Major .value span').innerText = getParameterByName("Major") ? getParameterByName("Major") : 'B.A. in Fine Arts'
 document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString()
 
+
 document.querySelector('.share .sharebtn').addEventListener('click', () => {
     if (navigator.canShare) {
         navigator.share({
             title: "校巴證",
             text: "中大校巴證",
-            url: window.location.href,
+            url: window.location.href+"&hideshare=true",
         });
     } else {
-        navigator.clipboard.writeText(window.location.href.toString()).then(function () {
+        navigator.clipboard.writeText(window.location.href.toString()+"&hideshare=true").then(function () {
             document.querySelector('.share button').innerText = "已複製到剪貼板"
         }, function (err) {
             document.querySelector('.share button').innerText = "分享失敗，請自行複製網址分享。"
@@ -55,3 +56,5 @@ document.querySelector('.share .sharebtn').addEventListener('click', () => {
 document.querySelector('.share .hidebtn').addEventListener('click', () => {
     document.querySelector('.share').style.display = "none";
 });
+
+if(getParameterByName("hideshare") == "true") document.querySelector('.share').style.display = "none";
