@@ -29,7 +29,8 @@ function submitform(form, replacecontent, target = "/") {
             document.querySelector('.studatas .Name .value span').innerText = form.Name.value ? form.Name.value : 'CHAN Siu-ming （陳小明）'
             document.querySelector('.studatas .SID .value span').innerText = form.SID.value ? form.SID.value : '1155125528'
             document.querySelector('.studatas .Major .value span').innerText = form.Major.value ? form.Major.value : 'B.A. in Fine Arts'
-            document.querySelector('.studatas .Valid .value span').innerText = form.Valid.value ? form.Valid.value : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString()
+            const today = new Date();
+            document.querySelector('.studatas .Valid .value span').innerText = form.Valid.value ? form.Valid.value : today.getDate()+"/"+(today.getMonth()+1)+"/"+(today.getFullYear()+1)
 
         }
     }

@@ -34,7 +34,8 @@ window.addEventListener('resize', resizecard);
 document.querySelector('.studatas .Name .value span').innerText = getParameterByName("Name") ? getParameterByName("Name") : 'CHAN Siu-ming （陳小明）'
 document.querySelector('.studatas .SID .value span').innerText = getParameterByName("SID") ? getParameterByName("SID") : '1155125528'
 document.querySelector('.studatas .Major .value span').innerText = getParameterByName("Major") ? getParameterByName("Major") : 'B.A. in Fine Arts'
-document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString()
+const today = new Date();
+document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : today.getDate()+"/"+(today.getMonth()+1)+"/"+(today.getFullYear()+1)
 
 
 document.querySelector('.share .sharebtn').addEventListener('click', () => {

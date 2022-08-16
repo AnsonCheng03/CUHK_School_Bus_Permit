@@ -74,6 +74,7 @@
 .header .hinttxt span {
     display: block;
     text-align: center;
+    white-space: nowrap;
 }
 
 .header .hinttxt span:first-child {
@@ -86,7 +87,6 @@
 .header .hinttxt span:nth-child(2) {
     font-size: 10px;
     font-family: Helvetica, sans-serif;
-    white-space: nowrap;
 }
 
 
