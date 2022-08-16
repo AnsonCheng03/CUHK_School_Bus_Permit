@@ -11,6 +11,9 @@ html, body {
     background: linear-gradient(45deg, rgba(66, 180, 250, 0.5) 0%, rgba(60, 250, 200, 0.5) 100%);
 }
 
+::selection { background: transparent; } 
+::-moz-selection { background: transparent; }
+
 .center {
     align-items: center;
     display: flex;
@@ -145,6 +148,7 @@ button {
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    cursor: pointer;
 }
 
 .download {

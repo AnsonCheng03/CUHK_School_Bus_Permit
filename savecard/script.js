@@ -29,3 +29,11 @@ document.querySelector('.studatas .Name .value span').innerText = getParameterBy
 document.querySelector('.studatas .SID .value span').innerText = getParameterByName("SID") ? getParameterByName("SID")  : '1155125528'
 document.querySelector('.studatas .Major .value span').innerText = getParameterByName("Major") ? getParameterByName("Major")  : 'B.A. in Fine Arts'
 document.querySelector('.studatas .Valid .value span').innerText = getParameterByName("Valid") ? getParameterByName("Valid") : '31/7/2022'
+
+function resizecard() {
+    let size = window.innerWidth * 0.8 / 560;
+    document.querySelector('.card').style.transform = "scale(" + size + ")"
+}
+
+window.addEventListener('load', resizecard);
+window.addEventListener('resize', resizecard);
