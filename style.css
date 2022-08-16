@@ -1,6 +1,6 @@
 html, body {
     min-height: 950px;
-    min-width: 320px;
+    min-width: 360px;
     margin: 0; 
     padding: 0;
     text-align: center;
@@ -163,5 +163,4 @@ button {
 
 .download {
     opacity: 0;
-    transition: all 0.5s ease-in-out;
 }
