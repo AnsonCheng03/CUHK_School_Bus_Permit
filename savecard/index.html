@@ -8,8 +8,8 @@
 
         body {
             display: flex;
-            min-height: 600px;
-            min-width: 396px;
+            min-height: 356px;
+            min-width: 560px;
             margin: 0;
             padding: 20px;
             text-align: center;
@@ -19,10 +19,16 @@
             align-items: center;
             justify-content: center;
 
+            overscroll-behavior: none;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
+        }
+
+        .card {
+            min-width: 560px;
+            min-height: 356px;
         }
 
         ::selection { background: transparent; } 
