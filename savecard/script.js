@@ -31,7 +31,8 @@ function resizecard() {
 window.addEventListener('load', resizecard);
 window.addEventListener('resize', resizecard);
 
-document.querySelector('.studatas .Name .value span').innerText = getParameterByName("Name") ? getParameterByName("Name") : 'CHAN Siu-ming （陳小明）'
+if(!getParameterByName("Name")) window.location.replace("../");
+document.querySelector('.studatas .Name .value span').innerText = getParameterByName("Name");
 document.querySelector('.studatas .SID .value span').innerText = getParameterByName("SID") ? getParameterByName("SID") : '1155125528'
 document.querySelector('.studatas .Major .value span').innerText = getParameterByName("Major") ? getParameterByName("Major") : 'B.A. in Fine Arts'
 const today = new Date();
