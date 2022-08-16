@@ -6,6 +6,7 @@ html, body {
     text-align: center;
     height: 100%;
     width: 100%;
+    overscroll-behavior: none;
     box-sizing: border-box;
     background: linear-gradient(45deg, rgba(66, 180, 250, 0.5) 0%, rgba(60, 250, 200, 0.5) 100%);
 }
@@ -138,6 +139,12 @@ button {
     align-items: center;
 
     transition: all 0.5s ease-in-out;
+
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .download {

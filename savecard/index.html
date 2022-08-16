@@ -5,6 +5,7 @@
     <link href="../getcard/style.css" rel="stylesheet">
     <script src="script.js" defer></script>
     <style>
+
         body {
             display: flex;
             min-height: 600px;
@@ -17,9 +18,15 @@
 
             align-items: center;
             justify-content: center;
-            height: 100%;
-            width: 100%;
+
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+
+        ::selection { background: transparent; } 
+        ::-moz-selection { background: transparent; }
     </style>
 </head>
 
