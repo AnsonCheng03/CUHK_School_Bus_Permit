@@ -164,5 +164,5 @@ button {
 }
 
 .download {
-    opacity: 0;
+    display: none;
 }

@@ -7,7 +7,7 @@ function submitform(form, replacecontent, target = "/") {
             var elm = document.querySelector(replacecontent);
             elm.innerHTML = this.response;
 
-            document.querySelector('.download').style.opacity = 1;
+            document.querySelector('.download').style.display = "unset";
 
             if (form.Type.value == "Transit") {
                 document.querySelector('.card').setAttribute('Type', 'Transit')
