@@ -30,7 +30,7 @@ function submitform(form, replacecontent, target = "/") {
             document.querySelector('.studatas .SID .value span').innerText = form.SID.value ? form.SID.value : '1155125528'
             document.querySelector('.studatas .Major .value span').innerText = form.Major.value ? form.Major.value : 'B.A. in Fine Arts'
             const today = new Date();
-            document.querySelector('.studatas .Valid .value span').innerText = form.Valid.value ? form.Valid.value : today.getDate()+"/"+(today.getMonth()+1)+"/"+(today.getFullYear()+1)
+            document.querySelector('.studatas .Valid .value span').innerText = form.Valid.value ? form.Valid.value : today.getDate() + "/" + (today.getMonth() + 1) + "/" + (today.getFullYear() + 1)
 
         }
     }
@@ -45,7 +45,8 @@ function resizecard() {
 }
 
 window.addEventListener('load', resizecard);
-window.addEventListener('resize', resizecard);
+if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+    window.addEventListener('resize', resizecard);
 document.querySelector('.download').addEventListener('click', () => {
     window.location.href = "savecard/?Type=" + document.querySelector('.card').getAttribute('Type') + "&Name=" + document.querySelector('.studatas .Name .value span').innerText + "&SID=" + document.querySelector('.studatas .SID .value span').innerText + "&Major=" + document.querySelector('.studatas .Major .value span').innerText + "&Valid=" + document.querySelector('.studatas .Valid .value span').innerText;
 });
