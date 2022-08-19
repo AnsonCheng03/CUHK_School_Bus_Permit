@@ -56,6 +56,11 @@ document.querySelector('.share .sharebtn').addEventListener('click', () => {
     }
 });
 
+document.querySelector('.share .printbtn').addEventListener('click', () => {
+    window.print();
+});
+
+
 document.querySelector('.share .hidebtn').addEventListener('click', () => {
     document.querySelector('.share').style.display = "none";
 });
