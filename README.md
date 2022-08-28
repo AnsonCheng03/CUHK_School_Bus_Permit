@@ -1,9 +1,10 @@
-# CUHK_School_Bus_Permit
-Create a CUHK School Bus Permit
+# CUHK_Timetable_fetch
+可取得CUSIS之時間表，並儲存到手機行事曆上～
 
-### 提示
-* 此網頁由中大學生設立，所產生之校巴證僅屬娛樂用途，並無實際作用。
-* 此網頁及其內容與中大交通事務處無關。
+### 聲明
+* https://cu-bus.000webhostapp.com/cusis/ 上的代碼與Github一致，並無蒐集用戶登入名稱及密碼。
+* 所用伺服器供應商為000webhostapp.com。
 
-### 網頁
-* https://ansoncheng03.github.io/CUHK_School_Bus_Permit/
+##$ API
+* 若使用Get Method連接至../cusis/api.php，會得到所有本學期課程之JSON檔。
+* 若使用Post Method，則會得到ICAL行事曆檔案。
