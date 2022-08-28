@@ -70,10 +70,19 @@
             background: transparent;
         }
 
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
 
         @media print {
 
+            html,
             body {
+                display: flex;
+                justify-content: right;
+                align-items: center;
                 print-color-adjust: exact !important;
                 -webkit-print-color-adjust: exact !important;
             }
@@ -82,6 +91,12 @@
             .share * {
                 display: none !important;
             }
+
+            .card {
+                transform: scale(1);
+            }
+
+
         }
     </style>
 </head>
