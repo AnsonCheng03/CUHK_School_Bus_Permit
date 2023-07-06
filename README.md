@@ -2,8 +2,8 @@
 可取得CUSIS之時間表，並儲存到手機行事曆上～
 
 ### 聲明
-* https://cu-bus.000webhostapp.com/cusis/ 上的代碼與Github一致，並無蒐集用戶登入名稱及密碼。
-* 所用伺服器供應商為000webhostapp.com。
+* [https://cu-bus.online/_permit/](https://cu-bus.online/_permit/) 上的代碼與Github一致，並無蒐集用戶登入名稱及密碼。
+* 所用伺服器供應商為hostinger。
 
 ##$ API
 * 若使用Get Method連接至../cusis/api.php，會得到所有本學期課程之JSON檔。
