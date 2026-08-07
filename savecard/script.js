@@ -41,17 +41,21 @@ document.querySelector('.studatas .Valid .value span').innerText = getParameterB
 
 
 document.querySelector('.share .sharebtn').addEventListener('click', () => {
+    const shareUrl = new URL(window.location.href);
+    shareUrl.searchParams.set('hideshare', 'true');
+    const shareButtonLabel = document.querySelector('.sharebtn .button-label');
+
     if (navigator.canShare) {
         navigator.share({
             title: "校巴證",
             text: "中大校巴證",
-            url: window.location.href + "&hideshare=true",
+            url: shareUrl.toString(),
         });
     } else {
-        navigator.clipboard.writeText(window.location.href.toString() + "&hideshare=true").then(function () {
-            document.querySelector('.share button').innerText = "已複製到剪貼板"
+        navigator.clipboard.writeText(shareUrl.toString()).then(function () {
+            shareButtonLabel.innerText = "已複製"
         }, function (err) {
-            document.querySelector('.share button').innerText = "分享失敗，請自行複製網址分享。"
+            shareButtonLabel.innerText = "分享失敗"
         });
     }
 });
@@ -63,6 +67,26 @@ document.querySelector('.share .printbtn').addEventListener('click', () => {
 
 document.querySelector('.share .hidebtn').addEventListener('click', () => {
     document.querySelector('.share').style.display = "none";
+    document.querySelector('.canvas-hint').style.display = "none";
 });
 
-if (getParameterByName("hideshare") == "true") document.querySelector('.share').style.display = "none";
+if (getParameterByName("hideshare") == "true") {
+    document.querySelector('.share').style.display = "none";
+    document.querySelector('.canvas-hint').style.display = "none";
+}
+
+const previewObject = document.querySelector('.preview-object');
+const previewCanvas = document.querySelector('.preview-canvas');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+previewCanvas.addEventListener('pointermove', (event) => {
+    if (reduceMotion || event.pointerType === 'touch') return;
+    const bounds = previewCanvas.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    previewObject.style.transform = `rotateX(${-y * 7}deg) rotateY(${x * 9}deg) translateZ(8px)`;
+});
+
+previewCanvas.addEventListener('pointerleave', () => {
+    previewObject.style.transform = '';
+});

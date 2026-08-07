@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-HK">
+
+<head>
+    <title>正在繪製校巴證 | 中大校巴資訊站</title>
+    <meta charset="utf-8">
+    <meta name="description" content="正在為你繪製專屬中大校巴證。">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#12031e">
+    <script>
+        const spaUrl = new URL('../', window.location.href);
+        spaUrl.search = window.location.search;
+        spaUrl.searchParams.set('step', 'creating');
+        window.location.replace(spaUrl);
+    </script>
+    <link href="../getcard/style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <canvas class="ambient-canvas" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true"></div>
+
+    <div class="creation-page">
+        <header class="site-header">
+            <a class="brand" href="../" aria-label="返回校巴證製作頁面">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M5.5 16.5h13V8.2c0-2-1.5-3.7-3.5-3.9L8.3 3.6a2.6 2.6 0 0 0-2.8 2.6v10.3Z" />
+                        <path d="M5.5 9h13M8.3 16.5v1.2M15.8 16.5v1.2M8.3 20a2.3 2.3 0 1 0 0-4.6 2.3 2.3 0 0 0 0 4.6ZM15.8 20a2.3 2.3 0 1 0 0-4.6 2.3 2.3 0 0 0 0 4.6Z" />
+                    </svg>
+                </span>
+                <span class="brand-copy">
+                    <strong>中大校巴資訊站</strong>
+                    <span>Permit Atelier</span>
+                </span>
+            </a>
+
+            <div class="step-pill"><b>02</b> / 03</div>
+        </header>
+
+        <main>
+            <section class="creation-copy" aria-live="polite">
+                <span class="eyebrow">Creating your permit</span>
+                <h1 class="status-title">正在下載繪製素材</h1>
+                <p class="status-copy">準備校徽、校巴塗裝與你的個人資料。</p>
+
+                <div class="progress-row">
+                    <div class="progress-dial" role="progressbar" aria-label="校巴證製作進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <span class="progress-value">0</span><small>%</small>
+                    </div>
+                    <ol class="process-list">
+                        <li class="active" data-stage="assets"><span></span>下載圖像素材</li>
+                        <li data-stage="paint"><span></span>逐筆繪製校巴證</li>
+                        <li data-stage="finish"><span></span>完成立體校對</li>
+                    </ol>
+                </div>
+
+                <div class="complete-actions" hidden>
+                    <a class="preview-button" href="../savecard/">
+                        <span>前往完整預覽</span>
+                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" /></svg>
+                    </a>
+                    <button class="flip-button" type="button">再翻一次</button>
+                </div>
+            </section>
+
+            <section class="permit-theatre" aria-label="校巴證繪製舞台">
+                <span class="theatre-label">CUHK · PERMIT ATELIER</span>
+                <span class="theatre-number">02</span>
+                <div class="orbit orbit-one" aria-hidden="true"></div>
+                <div class="orbit orbit-two" aria-hidden="true"></div>
+
+                <div class="card-viewport">
+                    <div class="card-scaler">
+                        <div class="card-object" role="button" tabindex="0" aria-label="翻轉校巴證" aria-disabled="true">
+                            <div class="card-front">
+                                <div class="card">
+                                    <div class="details">
+                                        <div class="header">
+                                            <div class="logo">
+                                                <img src="../getcard/images/CUHK.png" alt="">
+                                            </div>
+                                            <div class="schname">
+                                                <span>香港中文大學</span>
+                                                <span> The Chinese University of Hong Kong</span>
+                                            </div>
+                                            <div class="hinttxt">
+                                                <span>落車前請按鐘一次</span>
+                                                <span>To Stop Press The Bell Once</span>
+                                            </div>
+                                        </div>
+                                        <div class="cardname">
+                                            <h1></h1>
+                                            <h2></h2>
+                                        </div>
+                                        <div class="routeavil">
+                                            <div class="desctxt">
+                                                <span>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span>
+                                                <span>The Permit Holder is allowed to ride on the following routes</span>
+                                            </div>
+                                            <div class="routes">
+                                                <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">1</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">2</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #a4cc39 0%, #318761 100%);">3</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #f1a63b 0%, #e75a24 100%);">4</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #ffe3a8 0%, #ffc55A 100%);">8</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #d1b4d5 0%, #7961a8 100%);">N</span>
+                                                <span class="transit" style="background: linear-gradient(90deg, #896391 0%, #453087 100%);">H</span>
+                                                <span class="lesson" style="background: linear-gradient(90deg, #c2d6ea 0%, #29a1d8 100%);">5</span>
+                                                <span class="lesson" style="background: linear-gradient(90deg, #7c8644 0%, #585823 100%);">6A</span>
+                                                <span class="lesson" style="background: linear-gradient(90deg, #4f88c1 0%, #3f438f 100%);">6B</span>
+                                                <span class="lesson" style="background: linear-gradient(90deg, #c2c2c2 0%, #666666 100%);">7</span>
+                                            </div>
+                                        </div>
+                                        <div class="studatas">
+                                            <div class="Name">
+                                                <div class="desc"><span>學生姓名</span><span>Name</span></div>
+                                                <div class="value"><span></span></div>
+                                            </div>
+                                            <div class="SID">
+                                                <div class="desc"><span>學生編號</span><span>Student ID</span></div>
+                                                <div class="value"><span></span></div>
+                                            </div>
+                                            <div class="Major">
+                                                <div class="desc"><span>主修科目</span><span>Major</span></div>
+                                                <div class="value"><span></span></div>
+                                            </div>
+                                            <div class="Valid">
+                                                <div class="desc"><span>有效期至</span><span>Valid Until</span></div>
+                                                <div class="value"><span></span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <canvas class="paint-canvas" width="560" height="356" aria-hidden="true"></canvas>
+                                <span class="brush-head" aria-hidden="true"></span>
+                            </div>
+
+                            <div class="card-back" aria-hidden="true">
+                                <span class="back-mark">CU</span>
+                                <div>
+                                    <span class="back-eyebrow">Permit complete</span>
+                                    <strong>校巴證繪製完成</strong>
+                                    <small>一路順風 · Have a good journey</small>
+                                </div>
+                                <span class="back-route">01 — 03</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="interaction-hint">完成後可點按校巴證，從不同角度欣賞</p>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
