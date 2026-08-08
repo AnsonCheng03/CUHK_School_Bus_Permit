@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'cu-bus-permit-';
-const RELEASE_VERSION = new URL(self.location.href).searchParams.get('v') || 'dev';
+const RELEASE_VERSION = '20260809130000';
 const CACHE_NAME = `${CACHE_PREFIX}${RELEASE_VERSION}`;
 const APP_SHELL = [
     './',
@@ -22,13 +22,26 @@ function scopedUrl(path) {
     return new URL(path, self.registration.scope).href;
 }
 
+async function broadcastProgress(completed, total) {
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    clients.forEach((client) => client.postMessage({
+        type: 'CACHE_PROGRESS',
+        version: RELEASE_VERSION,
+        completed,
+        total
+    }));
+}
+
 async function refreshAppShell() {
     const cache = await caches.open(CACHE_NAME);
+    let completed = 0;
     await Promise.all(APP_SHELL.map(async (path) => {
         const request = new Request(scopedUrl(path), { cache: 'reload' });
         const response = await fetch(request);
         if (!response.ok) throw new Error(`Unable to cache ${path}`);
         await cache.put(request, response);
+        completed += 1;
+        await broadcastProgress(completed, APP_SHELL.length);
     }));
 }
 

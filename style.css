@@ -231,6 +231,140 @@ svg {
     gap: 10px;
 }
 
+.network-update-button {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    color: rgba(255,255,255,0.78);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.055);
+    cursor: pointer;
+    font: 800 9px/1 Arial, sans-serif;
+    letter-spacing: 0.05em;
+}
+
+.network-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #64d5a0;
+    box-shadow: 0 0 0 4px rgba(100,213,160,0.1);
+}
+
+.network-update-button[data-state="offline"] .network-status-dot {
+    background: #99919e;
+    box-shadow: none;
+}
+
+.network-update-button:hover { border-color: rgba(242,197,104,0.45); }
+.network-update-button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.network-update-button:disabled { opacity: 0.62; cursor: wait; }
+
+.update-dialog {
+    width: min(340px, calc(100% - 32px));
+    margin: auto;
+    padding: 24px;
+    color: #2d1838;
+    border: 1px solid rgba(85,34,122,0.16);
+    border-radius: 20px;
+    background: #fffdf9;
+    box-shadow: 0 24px 80px rgba(15,3,24,0.34);
+    text-align: center;
+}
+
+.update-dialog[open] {
+    animation: update-dialog-in 280ms cubic-bezier(.2,.75,.2,1) both;
+}
+
+.update-dialog[open]::backdrop {
+    animation: update-backdrop-in 240ms ease both;
+}
+
+.update-dialog.is-closing {
+    animation: update-dialog-out 220ms cubic-bezier(.4,0,1,1) both;
+}
+
+.update-dialog.is-closing::backdrop {
+    animation: update-backdrop-out 220ms ease both;
+}
+
+@keyframes update-dialog-in {
+    from { opacity: 0; transform: translateY(22px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes update-dialog-out {
+    to { opacity: 0; transform: translateY(18px) scale(0.985); }
+}
+
+@keyframes update-backdrop-in {
+    from { background: rgba(15,3,24,0); }
+    to { background: rgba(15,3,24,0.62); }
+}
+
+@keyframes update-backdrop-out {
+    from { background: rgba(15,3,24,0.62); }
+    to { background: rgba(15,3,24,0); }
+}
+
+.update-dialog-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 14px;
+    color: var(--purple-deep);
+    border-radius: 13px;
+    background: var(--gold);
+}
+
+.update-dialog-icon svg { width: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.update-dialog h2 { min-height: 23px; margin: 0; font-size: 19px; }
+.update-dialog p { min-height: 38px; margin: 9px 0 0; color: #6f6475; font-size: 12px; line-height: 1.55; }
+
+.update-progress {
+    height: 7px;
+    overflow: hidden;
+    margin-top: 18px;
+    border-radius: 999px;
+    background: #ece5ef;
+}
+
+.update-progress-fill {
+    width: 0;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--gold), #dd9d42);
+    transition: width 180ms ease;
+}
+
+.update-progress[hidden] {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.update-dialog-close {
+    min-width: 96px;
+    min-height: 40px;
+    margin-top: 20px;
+    padding: 0 18px;
+    color: var(--purple-deep);
+    border: 0;
+    border-radius: 11px;
+    background: var(--gold);
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.update-dialog-close:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
+.update-dialog-close[hidden] { display: inline-block; visibility: hidden; pointer-events: none; }
+
 .step-pill,
 .unofficial-badge {
     height: 38px;
@@ -620,6 +754,7 @@ input[type="number"] { -moz-appearance: textfield; }
     .brand-copy strong { font-size: 12px; }
     .brand-copy span { font-size: 7px; }
     .unofficial-badge { display: none; }
+    .network-update-button { min-height: 32px; padding-inline: 9px; }
     .builder-layout { border-radius: 21px; }
     .story-panel, .form-panel { padding: 34px 22px; }
     .story-panel { min-height: auto; }

@@ -44,6 +44,40 @@ test('iOS Safari can promote the native CU Bus app', () => {
     assert.match(html, /href="https:\/\/play\.google\.com\/store\/apps\/details\?id=com\.cubus\.app"/);
 });
 
+test('Android can launch the installed CU Bus app with a web fallback', () => {
+    assert.match(html, /data-platform="android" href="https:\/\/cu-bus\.online\/open-app"/);
+    assert.match(html, /data-i18n-aria-label="openApp"/);
+    assert.match(script, /openAppText: '開啟 App'/);
+    assert.match(script, /openAppText: 'Open app'/);
+    assert.match(script, /setAttribute\('data-platform', destination\)/);
+});
+
+test('mobile app banner avoids Safari compositing shadows', () => {
+    assert.match(styles, /@media \(max-width: 680px\)[\s\S]*\.app-promo \{[\s\S]*box-shadow: none;[\s\S]*-webkit-backdrop-filter: none;[\s\S]*backdrop-filter: none;/);
+});
+
+test('online status and manual update flow remain accessible', () => {
+    assert.match(html, /class="network-update-button"[^>]*data-state="online"/);
+    assert.match(html, /class="update-dialog"[^>]*aria-labelledby="update-dialog-title"[^>]*aria-describedby="update-dialog-message"/);
+    assert.match(html, /class="update-progress" role="progressbar"[^>]*aria-valuenow="0"/);
+    assert.match(script, /window\.addEventListener\('online', updateNetworkStatus\)/);
+    assert.match(script, /window\.addEventListener\('offline', updateNetworkStatus\)/);
+    assert.match(script, /fetch\(indexUrl, \{ cache: 'no-store' \}\)/);
+    assert.match(script, /latestVersion === assetVersion/);
+    assert.match(script, /cacheName\.startsWith\('cu-bus-permit-'\)/);
+    assert.match(script, /serviceWorker\.register\([\s\S]*encodeURIComponent\(latestVersion\)/);
+    assert.match(worker, /type: 'CACHE_PROGRESS'/);
+    assert.match(worker, /broadcastProgress\(completed, APP_SHELL\.length\)/);
+    assert.match(styles, /\.update-dialog\[open\][\s\S]*animation: update-dialog-in/);
+    assert.match(styles, /\.update-dialog\.is-closing::backdrop[\s\S]*animation: update-backdrop-out/);
+    assert.match(styles, /\.update-progress\[hidden\][\s\S]*visibility: hidden/);
+    assert.match(styles, /\.update-dialog-close\[hidden\][\s\S]*visibility: hidden/);
+    assert.match(script, /updateDialog\.classList\.add\('is-closing'\)/);
+    assert.match(script, /event\.preventDefault\(\);[\s\S]*closeUpdateDialog\(\)/);
+    assert.match(script, /siteHeader\.hidden = viewName !== 'form'/);
+    assert.doesNotMatch(styles, /site-header\.status-only/);
+});
+
 test('startup waits for IndexedDB and every visible app image', () => {
     assert.match(html, /class="app-loader"/);
     assert.match(script, /window\.indexedDB\.open\(databaseName, 1\)/);
@@ -115,6 +149,8 @@ test('full-screen preview moves the existing card without fading it', () => {
     assert.match(script, /fullscreenMount\.append\(cardScaler\)[\s\S]*resizeCard\(\)[\s\S]*animateCardMove\(cardStartRect\)/);
     assert.match(script, /function openFullscreenPreview\(\)[\s\S]*cardObject\.setAttribute\('tabindex', '0'\)/);
     assert.match(styles, /\.fullscreen-preview::before[\s\S]*animation: fullscreen-in/);
+    assert.match(styles, /\.fullscreen-close[\s\S]*animation: fullscreen-close-in 260ms ease both/);
+    assert.match(styles, /\.fullscreen-preview\.is-closing \.fullscreen-close[\s\S]*opacity: 0[\s\S]*transform: scale\(0\.92\)/);
     assert.match(styles, /\.fullscreen-preview \.card-mount[\s\S]*z-index: 1/);
     assert.match(script, /function animateCardBackToPreview\(\)[\s\S]*targetRect = previewMount\.getBoundingClientRect\(\)/);
     assert.match(script, /closeFullscreenPreview\(\)[\s\S]*await animateCardBackToPreview\(\)[\s\S]*previewMount\.append\(cardScaler\)/);
@@ -142,7 +178,7 @@ test('WCAG interaction structure and focus management remain present', () => {
     assert.match(html, /class="creation-layout"[^>]*data-i18n-aria-label="creatingLabel"[^>]*tabindex="-1"/);
     assert.match(html, /class="preview-panel-spa"[^>]*data-i18n-aria-label="previewLabel"/);
     assert.match(html, /id="app-status" role="status" aria-live="polite" aria-atomic="true"/);
-    assert.match(html, /class="fullscreen-preview" role="dialog" aria-modal="true"/);
+    assert.match(html, /class="fullscreen-preview"[^>]*role="dialog"[^>]*aria-modal="true"/);
     assert.match(html, /class="fullscreen-close"[^>]*data-i18n-aria-label="closeFullscreen"/);
     assert.match(html, /class="card-object" role="button" tabindex="-1"[^>]*aria-describedby="card-accessible-description"/);
     assert.match(script, /cardScaler\.setAttribute\('aria-hidden', String\(!cardIsAvailable\)\)/);
@@ -154,12 +190,19 @@ test('WCAG interaction structure and focus management remain present', () => {
     assert.match(script, /cardObject\.focus\(\{ preventScroll: true \}\)[\s\S]*announce\(t\('previewStatus'\)\)/);
     assert.match(script, /function updateCardAccessibleDescription\([^)]*showBack[\s\S]*\.terms-list li > span\[lang=/);
     assert.match(script, /function setCardSide\(showBack\)[\s\S]*updateCardAccessibleDescription\(permitParams, showBack\)/);
+    assert.match(html, /class="preview-actions" role="group"[^>]*data-i18n-aria-label="actionsLabel"/);
+    for (const actionLabel of ['previewActionLabel', 'editActionLabel', 'shareActionLabel', 'printActionLabel']) {
+        assert.match(html, new RegExp(`class="[^"]*action-button[^"]*"[^>]*tabindex="0"[^>]*data-i18n-aria-label="${actionLabel}"`));
+    }
+    assert.match(html, /class="[^"]*fullscreen-button[^"]*"[^>]*aria-haspopup="dialog"[^>]*aria-controls="fullscreen-preview"/);
+    assert.match(html, /class="[^"]*edit-permit-button[^"]*"[^>]*aria-controls="permit-form"/);
 });
 
 test('WCAG motion, focus visibility, language, and status support remain present', () => {
     assert.match(styles, /\.skip-link:focus[\s\S]*transform: translateY\(0\)/);
     assert.match(styles, /\.field input:focus-visible[\s\S]*outline: 3px solid var\(--purple\)/);
     assert.match(styles, /\.fullscreen-close:focus-visible[\s\S]*outline: 3px solid var\(--gold\)/);
+    assert.match(styles, /\.preview-actions \.action-button:focus-visible[\s\S]*outline: 3px solid #fff[\s\S]*box-shadow: 0 0 0 6px/);
     assert.match(styles, /@media \(forced-colors: active\)/);
     assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration: 0\.01ms !important/);
     assert.match(script, /function animateProgress[\s\S]*if \(reducedMotion\)[\s\S]*setProgress\(to\)/);
@@ -206,6 +249,8 @@ test('service worker supports offline use and deterministic updates', () => {
     const versions = [...html.matchAll(/\?v=(\d+)/g)].map((match) => match[1]);
     assert.ok(versions.length >= 4, 'versioned core assets are missing');
     assert.equal(new Set(versions).size, 1, 'core asset versions must match');
+    const workerVersion = worker.match(/const RELEASE_VERSION = '(\d+)'/)?.[1];
+    assert.equal(workerVersion, versions[0], 'service worker release version must match the app shell');
 
     for (const asset of [
         'index.html', 'style.css', 'spa.css', 'script.js', 'site.webmanifest',

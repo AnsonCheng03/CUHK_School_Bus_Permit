@@ -278,6 +278,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    gap: 8px;
     margin-left: auto;
 }
 
@@ -299,6 +300,7 @@ body {
 }
 
 .store-badge:focus-visible,
+.open-app-destination:focus-visible,
 .website-destination:focus-visible {
     outline: 3px solid var(--gold);
     outline-offset: 4px;
@@ -1619,6 +1621,14 @@ body.discarding-card .app-promo {
     box-shadow: 0 10px 24px rgba(0,0,0,0.22);
 }
 
+.preview-actions .action-button:focus-visible {
+    color: var(--purple-deep);
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+    background: var(--gold);
+    box-shadow: 0 0 0 6px rgba(242,197,104,0.24);
+}
+
 .action-button:disabled {
     opacity: 0.6;
     cursor: wait;
@@ -1682,6 +1692,14 @@ body.discarding-card .app-promo {
     border: 2px solid rgba(255,255,255,0.72);
     border-radius: 50%;
     background: rgba(24,6,39,0.82);
+    animation: fullscreen-close-in 260ms ease both;
+    transition: opacity 260ms ease, transform 260ms ease;
+}
+
+.fullscreen-preview.is-closing .fullscreen-close {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.92);
 }
 
 .fullscreen-close svg {
@@ -1734,6 +1752,10 @@ body[data-view="preview"] .page-shell {
 
 @keyframes fullscreen-in {
     from { opacity: 0; }
+}
+
+@keyframes fullscreen-close-in {
+    from { opacity: 0; transform: scale(0.92); }
 }
 
 @keyframes fullscreen-out {
@@ -1794,6 +1816,9 @@ body[data-view="preview"] .page-shell {
         gap: 10px;
         padding: 11px 12px;
         border-radius: 15px;
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
     }
 
     .app-promo-icon {
@@ -1805,6 +1830,15 @@ body[data-view="preview"] .page-shell {
     .app-promo-destination {
         grid-column: 3;
         margin: 0;
+    }
+
+    .app-promo[data-platform="android"] {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .app-promo[data-platform="android"] .app-promo-destination {
+        grid-column: 1 / -1;
+        justify-content: center;
     }
 
     .store-badge img {
@@ -1913,6 +1947,7 @@ body[data-view="preview"] .page-shell {
     .app-promo,
     .preview-actions,
     .fullscreen-preview,
+    .update-dialog,
     .site-footer { display: none !important; }
     .preview-view,
     .preview-panel-spa {

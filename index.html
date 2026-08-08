@@ -59,10 +59,10 @@
             }
         }
     </script>
-    <link href="getcard/style.css?v=20260809000427" rel="stylesheet">
-    <link href="style.css?v=20260809000427" rel="stylesheet">
-    <link href="spa.css?v=20260809000427" rel="stylesheet">
-    <script src="script.js?v=20260809000427" defer></script>
+    <link href="getcard/style.css?v=20260809130000" rel="stylesheet">
+    <link href="style.css?v=20260809130000" rel="stylesheet">
+    <link href="spa.css?v=20260809130000" rel="stylesheet">
+    <script src="script.js?v=20260809130000" defer></script>
     <link rel="preload" as="image" href="getcard/images/schbus_d.png">
     <link rel="preload" as="image" href="getcard/images/schbus_l.png">
     <link rel="preload" as="image" href="getcard/images/CUHK.png">
@@ -108,12 +108,16 @@
             </a>
 
             <div class="header-meta">
-                <span class="step-pill" role="status" aria-live="polite" aria-atomic="true"><b class="current-step">01</b> / 03</span>
+                <span class="step-pill" role="status" aria-live="polite" aria-atomic="true"><b class="current-step">01</b> /03</span>
                 <button class="edit-link" type="button" hidden>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
                     <span data-i18n="rebuild">重新製作</span>
                 </button>
                 <span class="unofficial-badge" data-i18n="unofficial">非官方工具</span>
+                <button class="network-update-button" type="button" data-state="online" aria-label="目前在線，檢查是否有更新">
+                    <span class="network-status-dot" aria-hidden="true"></span>
+                    <span class="network-status-label" aria-live="polite">在線</span>
+                </button>
                 <button class="language-toggle header-language-toggle" type="button" aria-label="Switch to English">EN</button>
             </div>
         </header>
@@ -126,7 +130,7 @@
                             <h1 id="page-title" tabindex="-1" data-i18n="formTitle">校巴證資料</h1>
                         </div>
 
-                        <form class="permit-form">
+                        <form class="permit-form" id="permit-form">
                             <fieldset class="permit-type">
                                 <legend data-i18n="busTypeLegend">想乘搭哪種校巴？</legend>
                                 <div class="type-options">
@@ -196,12 +200,18 @@
                     <div class="preview-canvas-spa">
                         <div class="preview-card-mount card-mount"></div>
                     </div>
-                    <aside class="app-promo" aria-label="下載 CU Bus 應用程式" data-i18n-aria-label="appLabel">
+                    <aside class="app-promo" aria-label="開啟或下載 CU Bus 應用程式" data-i18n-aria-label="appLabel">
                         <img class="app-promo-icon" src="bus-app-icon-256.png" alt="">
                         <div class="app-promo-copy">
                             <strong>CU Bus App</strong>
                         </div>
                         <div class="app-promo-destination">
+                            <a class="website-destination open-app-destination" data-platform="android" href="https://cu-bus.online/open-app" aria-label="在已安裝的裝置開啟 CU Bus" data-i18n-aria-label="openApp" hidden>
+                                <svg class="website-destination-icon" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path d="M7 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V13M10 10l6-6M11.5 4H16v4.5" />
+                                </svg>
+                                <span data-i18n="openAppText">開啟 App</span>
+                            </a>
                             <a class="store-badge store-badge-apple" data-platform="ios" href="https://apps.apple.com/us/app/cu-bus/id6736944558" target="_blank" rel="noopener" aria-label="在 App Store 下載 CU Bus" data-i18n-aria-label="downloadIos" hidden>
                                 <img src="app-store-badge.svg" alt="Download on the App Store">
                             </a>
@@ -225,20 +235,20 @@
                     </aside>
                 </main>
 
-                <section class="preview-actions" aria-label="校巴證操作" data-i18n-aria-label="actionsLabel">
-                        <button class="action-button fullscreen-button" type="button">
+                <section class="preview-actions" role="group" aria-label="校巴證操作" data-i18n-aria-label="actionsLabel">
+                        <button class="action-button fullscreen-button" type="button" tabindex="0" aria-label="開啟校巴證全螢幕預覽" data-i18n-aria-label="previewActionLabel" aria-haspopup="dialog" aria-controls="fullscreen-preview">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" /></svg>
                             <span data-i18n="previewButton">預覽</span>
                         </button>
-                        <button class="action-button edit-permit-button" type="button">
+                        <button class="action-button edit-permit-button" type="button" tabindex="0" aria-label="編輯校巴證資料" data-i18n-aria-label="editActionLabel" aria-controls="permit-form">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
                             <span data-i18n="editButton">編輯</span>
                         </button>
-                        <button class="action-button share-image-button" type="button">
+                        <button class="action-button share-image-button" type="button" tabindex="0" aria-label="分享或下載校巴證圖片" data-i18n-aria-label="shareActionLabel">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="14.5" cy="4.5" r="2.2" /><circle cx="5" cy="10" r="2.2" /><circle cx="14.5" cy="15.5" r="2.2" /><path d="m7 8.9 5.4-3.2M7 11.1l5.4 3.2" /></svg>
                             <span class="button-label" data-i18n="shareButton">分享圖片</span>
                         </button>
-                        <button class="action-button printbtn" type="button">
+                        <button class="action-button printbtn" type="button" tabindex="0" aria-label="列印校巴證" data-i18n-aria-label="printActionLabel">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 7V3h8v4M6 14H4V8h12v6h-2M6 11h8v6H6v-6Z" /><path d="M13.5 9.5h.01" /></svg>
                             <span data-i18n="printButton">列印</span>
                         </button>
@@ -254,12 +264,24 @@
         </footer>
     </div>
 
-    <div class="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" data-i18n-aria-label="fullscreenLabel" tabindex="-1" hidden>
+    <div class="fullscreen-preview" id="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" data-i18n-aria-label="fullscreenLabel" tabindex="-1" hidden>
         <button class="fullscreen-close" type="button" aria-label="關閉全螢幕預覽" data-i18n-aria-label="closeFullscreen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
         </button>
         <div class="fullscreen-card-mount card-mount"></div>
     </div>
+
+    <dialog class="update-dialog" aria-labelledby="update-dialog-title" aria-describedby="update-dialog-message" tabindex="-1">
+        <div class="update-dialog-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6.1 8.5A7 7 0 0 1 18.8 7M17.9 15.5A7 7 0 0 1 5.2 17" /></svg>
+        </div>
+        <h2 id="update-dialog-title">正在檢查更新</h2>
+        <p id="update-dialog-message" role="status" aria-live="polite">正在確認是否為最新版本。</p>
+        <div class="update-progress" role="progressbar" aria-label="更新進度" data-i18n-aria-label="updateProgressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+            <span class="update-progress-fill"></span>
+        </div>
+        <button class="update-dialog-close" type="button" data-i18n="closeUpdate">關閉</button>
+    </dialog>
 
     <div class="card-scaler" aria-hidden="true">
         <p class="sr-only" id="card-accessible-description"></p>

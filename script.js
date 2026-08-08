@@ -30,6 +30,14 @@ const editPermitButton = document.querySelector('.edit-permit-button');
 const shareImageButton = document.querySelector('.share-image-button');
 const shareButtonLabel = shareImageButton.querySelector('.button-label');
 const languageToggles = [...document.querySelectorAll('.language-toggle')];
+const networkUpdateButton = document.querySelector('.network-update-button');
+const networkStatusLabel = document.querySelector('.network-status-label');
+const updateDialog = document.querySelector('.update-dialog');
+const updateDialogTitle = document.querySelector('#update-dialog-title');
+const updateDialogMessage = document.querySelector('#update-dialog-message');
+const updateDialogClose = document.querySelector('.update-dialog-close');
+const updateProgress = document.querySelector('.update-progress');
+const updateProgressFill = document.querySelector('.update-progress-fill');
 const platformDestinations = [...document.querySelectorAll('[data-platform]')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
@@ -110,13 +118,17 @@ const translations = {
         sidLabel: '學生編號', sidPlaceholder: '例如：1155125528', majorLabel: '主修科目', majorPlaceholder: '例如：Fine Arts',
         validLabel: '有效期', validSub: '截止日期', privacy: '只輸入你願意顯示於校巴證上的資料', generate: '開始繪製',
         generateEntering: '進入繪製室…', creatingLabel: '正在繪製校巴證', theatreLabel: '校巴證繪製舞台', progressLabel: '校巴證製作進度',
-        previewLabel: '校巴證及操作', appLabel: '下載 CU Bus 應用程式', downloadIos: '在 App Store 下載 CU Bus', downloadAndroid: '在 Google Play 下載 CU Bus', visitWebsite: '前往 CU Bus 網站', visitWebsiteText: '探索 CU Bus', qrLabel: 'CU Bus 網站 QR code',
+        previewLabel: '校巴證及操作', appLabel: '開啟或下載 CU Bus 應用程式', openApp: '在已安裝的裝置開啟 CU Bus', openAppText: '開啟 App', downloadIos: '在 App Store 下載 CU Bus', downloadAndroid: '在 Google Play 下載 CU Bus', visitWebsite: '前往 CU Bus 網站', visitWebsiteText: '探索 CU Bus', qrLabel: 'CU Bus 網站 QR code',
         qrAlt: '前往 cu-bus.online 的 QR code', scanWebsite: '掃描瀏覽網站', actionsLabel: '校巴證操作',
         previewButton: '預覽', editButton: '編輯', shareButton: '分享圖片', printButton: '列印',
+        previewActionLabel: '開啟校巴證全螢幕預覽', editActionLabel: '編輯校巴證資料', shareActionLabel: '分享或下載校巴證圖片', printActionLabel: '列印校巴證',
         footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽', closeFullscreen: '關閉全螢幕預覽',
         stepForm: '第 1 步，共 3 步：輸入校巴證資料', stepCreating: '第 2 步，共 3 步：正在繪製校巴證', stepPreview: '第 3 步，共 3 步：預覽校巴證',
         creatingStatus: '正在繪製校巴證，完成後會自動前往預覽。', previewStatus: '校巴證已完成。你可以翻轉校巴證、預覽、編輯、分享或列印。',
-        showBack: '查看校巴證乘車須知', showFront: '翻回校巴證正面', shareWorking: '正在製作分享圖片', shareSaved: '圖片已儲存', shareFailed: '未能分享圖片', shareTitle: '中大校巴證'
+        showBack: '查看校巴證乘車須知', showFront: '翻回校巴證正面', shareWorking: '正在製作分享圖片', shareSaved: '圖片已儲存', shareFailed: '未能分享圖片', shareTitle: '中大校巴證',
+        online: '在線', offline: '離線', onlineUpdateLabel: '目前在線，檢查是否有更新', offlineUpdateLabel: '目前離線，連線後可檢查更新',
+        checkingTitle: '正在檢查更新', checkingMessage: '正在確認是否為最新版本。', updatingTitle: '正在更新', updatingMessage: '正在更新離線檔案，完成後會自動重新載入。',
+        latestTitle: '已是最新版本', latestMessage: '你正在使用最新版本。', offlineTitle: '目前離線', offlineMessage: '連線後再檢查更新。', updateErrorTitle: '未能更新', updateErrorMessage: '請檢查網絡連線後再試。', updateProgressLabel: '更新進度', closeUpdate: '關閉'
     },
     en: {
         skipLink: 'Skip to main content', loadingLabel: 'Loading CU Bus', loadingText: 'Loading', homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
@@ -126,13 +138,17 @@ const translations = {
         sidLabel: 'Student ID', sidPlaceholder: 'e.g. 1155125528', majorLabel: 'Major', majorPlaceholder: 'e.g. Fine Arts',
         validLabel: 'Valid until', validSub: 'Expiry date', privacy: 'Only enter information you want shown on the permit', generate: 'Create permit',
         generateEntering: 'Opening studio…', creatingLabel: 'Creating school bus permit', theatreLabel: 'Permit creation stage', progressLabel: 'Permit creation progress',
-        previewLabel: 'Permit and actions', appLabel: 'Download the CU Bus app', downloadIos: 'Download CU Bus on the App Store', downloadAndroid: 'Get CU Bus on Google Play', visitWebsite: 'Visit the CU Bus website', visitWebsiteText: 'Explore CU Bus', qrLabel: 'CU Bus website QR code',
+        previewLabel: 'Permit and actions', appLabel: 'Open or download the CU Bus app', openApp: 'Open CU Bus if it is installed', openAppText: 'Open app', downloadIos: 'Download CU Bus on the App Store', downloadAndroid: 'Get CU Bus on Google Play', visitWebsite: 'Visit the CU Bus website', visitWebsiteText: 'Explore CU Bus', qrLabel: 'CU Bus website QR code',
         qrAlt: 'QR code for cu-bus.online', scanWebsite: 'Scan to visit', actionsLabel: 'Permit actions',
         previewButton: 'Preview', editButton: 'Edit', shareButton: 'Share image', printButton: 'Print',
+        previewActionLabel: 'Open full-screen permit preview', editActionLabel: 'Edit permit details', shareActionLabel: 'Share or download permit image', printActionLabel: 'Print permit',
         footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview', closeFullscreen: 'Close full-screen preview',
         stepForm: 'Step 1 of 3: Enter permit details', stepCreating: 'Step 2 of 3: Creating permit', stepPreview: 'Step 3 of 3: Preview permit',
         creatingStatus: 'Creating your permit. The preview will open automatically when it is ready.', previewStatus: 'Your permit is ready. You can flip, preview, edit, share, or print it.',
-        showBack: 'View passenger notice', showFront: 'Return to the permit front', shareWorking: 'Creating share image', shareSaved: 'Image saved', shareFailed: 'Unable to share image', shareTitle: 'CUHK School Bus Permit'
+        showBack: 'View passenger notice', showFront: 'Return to the permit front', shareWorking: 'Creating share image', shareSaved: 'Image saved', shareFailed: 'Unable to share image', shareTitle: 'CUHK School Bus Permit',
+        online: 'Online', offline: 'Offline', onlineUpdateLabel: 'Online. Check for updates', offlineUpdateLabel: 'Offline. Connect to check for updates',
+        checkingTitle: 'Checking for updates', checkingMessage: 'Confirming that this is the latest version.', updatingTitle: 'Updating', updatingMessage: 'Refreshing offline files. The app will reload when ready.',
+        latestTitle: 'Latest version', latestMessage: 'You are using the latest version.', offlineTitle: 'You are offline', offlineMessage: 'Connect to the internet and try again.', updateErrorTitle: 'Update failed', updateErrorMessage: 'Check your connection and try again.', updateProgressLabel: 'Update progress', closeUpdate: 'Close'
     }
 };
 
@@ -150,6 +166,9 @@ let isDiscarding = false;
 let appInitialized = false;
 let draftSaveTimer;
 let validDateChanged = false;
+let serviceWorkerRegistration;
+let updateInProgress = false;
+let updateDialogCloseTimer;
 
 const permitFieldNames = ['Type', 'Name', 'SID', 'Major', 'Valid'];
 const databaseName = 'cu-bus-permit';
@@ -304,6 +323,14 @@ function announce(message) {
     window.requestAnimationFrame(() => { appStatus.textContent = message; });
 }
 
+function updateNetworkStatus() {
+    if (!networkUpdateButton || !networkStatusLabel) return;
+    const online = navigator.onLine;
+    networkUpdateButton.dataset.state = online ? 'online' : 'offline';
+    networkStatusLabel.textContent = t(online ? 'online' : 'offline');
+    networkUpdateButton.setAttribute('aria-label', t(online ? 'onlineUpdateLabel' : 'offlineUpdateLabel'));
+}
+
 function updateCardAccessibleDescription(params = permitParams, showBack = cardObject.classList.contains('is-back')) {
     if (!cardAccessibleDescription) return;
     if (showBack) {
@@ -349,6 +376,7 @@ function setLanguage(language, persist = true) {
     updateSeo(activeView);
     setCardSide(cardObject.classList.contains('is-back'));
     updateCardAccessibleDescription();
+    updateNetworkStatus();
     if (persist) {
         void writeSavedValue(languagePreferenceKey, currentLanguage);
     }
@@ -372,6 +400,7 @@ function configureAppDestination() {
     platformDestinations.forEach((link) => {
         link.hidden = link.dataset.platform !== destination;
     });
+    document.querySelector('.app-promo')?.setAttribute('data-platform', destination);
 }
 
 function commitView(viewName, skipFallbackEntry = false, forceEntry = false) {
@@ -1262,6 +1291,160 @@ fullscreenPreview.addEventListener('click', (event) => {
 });
 shareImageButton.addEventListener('click', sharePermitImage);
 document.querySelector('.printbtn').addEventListener('click', () => window.print());
+
+function setUpdateProgress(value) {
+    const progress = Math.max(0, Math.min(100, Math.round(value)));
+    updateProgressFill.style.width = `${progress}%`;
+    updateProgress.setAttribute('aria-valuenow', String(progress));
+}
+
+function showUpdateDialog(titleKey, messageKey, { showProgress = false, closable = true } = {}) {
+    window.clearTimeout(updateDialogCloseTimer);
+    updateDialog.classList.remove('is-closing');
+    updateDialogTitle.textContent = t(titleKey);
+    updateDialogMessage.textContent = t(messageKey);
+    updateProgress.hidden = !showProgress;
+    updateDialogClose.hidden = !closable;
+    if (!updateDialog.open) updateDialog.showModal();
+    if (closable) updateDialogClose.focus({ preventScroll: true });
+    else updateDialog.focus({ preventScroll: true });
+}
+
+function closeUpdateDialog() {
+    if (updateInProgress || !updateDialog.open || updateDialog.classList.contains('is-closing')) return;
+    const finishClose = () => {
+        window.clearTimeout(updateDialogCloseTimer);
+        updateDialog.classList.remove('is-closing');
+        if (updateDialog.open) updateDialog.close();
+    };
+    if (reducedMotion) {
+        finishClose();
+        return;
+    }
+    updateDialog.classList.add('is-closing');
+    updateDialogCloseTimer = window.setTimeout(finishClose, 240);
+}
+
+async function fetchLatestAssetVersion() {
+    const indexUrl = new URL('./index.html', document.baseURI);
+    indexUrl.searchParams.set('update-check', String(Date.now()));
+    const response = await fetch(indexUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Update check failed with ${response.status}`);
+    const documentMarkup = await response.text();
+    const latestDocument = new DOMParser().parseFromString(documentMarkup, 'text/html');
+    const latestScript = latestDocument.querySelector('script[src*="script.js"]');
+    if (!latestScript) throw new Error('Latest version marker is missing');
+    const latestScriptUrl = new URL(latestScript.getAttribute('src'), indexUrl);
+    const latestVersion = latestScriptUrl.searchParams.get('v');
+    if (!latestVersion) throw new Error('Latest version is missing');
+    return latestVersion;
+}
+
+async function clearPermitCaches() {
+    if (!('caches' in window)) return;
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames
+        .filter((cacheName) => cacheName.startsWith('cu-bus-permit-'))
+        .map((cacheName) => caches.delete(cacheName)));
+}
+
+function waitForWorkerActivation(worker) {
+    if (!worker || worker.state === 'activated') return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        const timeout = window.setTimeout(() => {
+            worker.removeEventListener('statechange', onStateChange);
+            reject(new Error('Service worker activation timed out'));
+        }, 30000);
+        const onStateChange = () => {
+            if (worker.state === 'activated') {
+                window.clearTimeout(timeout);
+                worker.removeEventListener('statechange', onStateChange);
+                resolve();
+            } else if (worker.state === 'redundant') {
+                window.clearTimeout(timeout);
+                worker.removeEventListener('statechange', onStateChange);
+                reject(new Error('Service worker became redundant'));
+            }
+        };
+        worker.addEventListener('statechange', onStateChange);
+    });
+}
+
+async function installLatestVersion(latestVersion) {
+    setUpdateProgress(8);
+    await clearPermitCaches();
+    setUpdateProgress(16);
+
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) {
+        setUpdateProgress(100);
+        window.location.reload();
+        return;
+    }
+
+    const onProgress = (event) => {
+        const message = event.data;
+        if (message?.type !== 'CACHE_PROGRESS' || message.version !== latestVersion) return;
+        setUpdateProgress(16 + (message.completed / message.total) * 78);
+    };
+    navigator.serviceWorker.addEventListener('message', onProgress);
+    try {
+        serviceWorkerRegistration = await navigator.serviceWorker.register(
+            `./service-worker.js?v=${encodeURIComponent(latestVersion)}`,
+            { scope: './', updateViaCache: 'none' }
+        );
+        const worker = serviceWorkerRegistration.installing || serviceWorkerRegistration.waiting || serviceWorkerRegistration.active;
+        await waitForWorkerActivation(worker);
+        setUpdateProgress(100);
+        await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 450));
+        window.location.reload();
+    } finally {
+        navigator.serviceWorker.removeEventListener('message', onProgress);
+    }
+}
+
+async function checkForUpdates() {
+    if (updateInProgress) return;
+    if (!navigator.onLine) {
+        showUpdateDialog('offlineTitle', 'offlineMessage');
+        return;
+    }
+
+    updateInProgress = true;
+    networkUpdateButton.disabled = true;
+    showUpdateDialog('checkingTitle', 'checkingMessage', { closable: false });
+    try {
+        const latestVersion = await fetchLatestAssetVersion();
+        if (latestVersion === assetVersion) {
+            await serviceWorkerRegistration?.update();
+            updateInProgress = false;
+            networkUpdateButton.disabled = false;
+            showUpdateDialog('latestTitle', 'latestMessage');
+            announce(t('latestMessage'));
+            return;
+        }
+
+        showUpdateDialog('updatingTitle', 'updatingMessage', { showProgress: true, closable: false });
+        setUpdateProgress(0);
+        await installLatestVersion(latestVersion);
+    } catch {
+        updateInProgress = false;
+        networkUpdateButton.disabled = false;
+        showUpdateDialog('updateErrorTitle', 'updateErrorMessage');
+        announce(t('updateErrorMessage'));
+    }
+}
+
+networkUpdateButton.addEventListener('click', checkForUpdates);
+updateDialogClose.addEventListener('click', closeUpdateDialog);
+updateDialog.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeUpdateDialog();
+});
+updateDialog.addEventListener('click', (event) => {
+    if (event.target === updateDialog) closeUpdateDialog();
+});
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
 document.addEventListener('keydown', (event) => {
     if (!isFullscreen) return;
     if (event.key === 'Escape') {
@@ -1308,6 +1491,7 @@ function registerServiceWorker() {
                 scope: './',
                 updateViaCache: 'none'
             });
+            serviceWorkerRegistration = registration;
             void registration.update();
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') void registration.update();
