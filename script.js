@@ -23,6 +23,7 @@ const editPermitButton = document.querySelector('.edit-permit-button');
 const shareImageButton = document.querySelector('.share-image-button');
 const shareButtonLabel = shareImageButton.querySelector('.button-label');
 const languageToggles = [...document.querySelectorAll('.language-toggle')];
+const platformDestinations = [...document.querySelectorAll('[data-platform]')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
 const titleMeta = document.querySelector('meta[name="title"]');
@@ -91,7 +92,7 @@ const translations = {
         sidLabel: '學生編號', sidPlaceholder: '例如：1155125528', majorLabel: '主修科目', majorPlaceholder: '例如：Fine Arts',
         validLabel: '有效期', validSub: '截止日期', privacy: '只輸入你願意顯示於校巴證上的資料', generate: '開始繪製',
         generateEntering: '進入繪製室…', creatingLabel: '正在繪製校巴證', theatreLabel: '校巴證繪製舞台', progressLabel: '校巴證製作進度',
-        previewLabel: '校巴證及操作', appLabel: '下載 CU Bus 應用程式', qrLabel: 'CU Bus 網站 QR code',
+        previewLabel: '校巴證及操作', appLabel: '下載 CU Bus 應用程式', downloadIos: '在 App Store 下載 CU Bus', downloadAndroid: '在 Google Play 下載 CU Bus', visitWebsite: '前往 CU Bus 網站', visitWebsiteText: '探索 CU Bus', qrLabel: 'CU Bus 網站 QR code',
         qrAlt: '前往 cu-bus.online 的 QR code', scanWebsite: '掃描瀏覽網站', actionsLabel: '校巴證操作',
         previewButton: '預覽', editButton: '編輯', shareButton: '分享圖片', printButton: '列印',
         footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽',
@@ -105,7 +106,7 @@ const translations = {
         sidLabel: 'Student ID', sidPlaceholder: 'e.g. 1155125528', majorLabel: 'Major', majorPlaceholder: 'e.g. Fine Arts',
         validLabel: 'Valid until', validSub: 'Expiry date', privacy: 'Only enter information you want shown on the permit', generate: 'Create permit',
         generateEntering: 'Opening studio…', creatingLabel: 'Creating school bus permit', theatreLabel: 'Permit creation stage', progressLabel: 'Permit creation progress',
-        previewLabel: 'Permit and actions', appLabel: 'Download the CU Bus app', qrLabel: 'CU Bus website QR code',
+        previewLabel: 'Permit and actions', appLabel: 'Download the CU Bus app', downloadIos: 'Download CU Bus on the App Store', downloadAndroid: 'Get CU Bus on Google Play', visitWebsite: 'Visit the CU Bus website', visitWebsiteText: 'Explore CU Bus', qrLabel: 'CU Bus website QR code',
         qrAlt: 'QR code for cu-bus.online', scanWebsite: 'Scan to visit', actionsLabel: 'Permit actions',
         previewButton: 'Preview', editButton: 'Edit', shareButton: 'Share image', printButton: 'Print',
         footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview',
@@ -205,6 +206,26 @@ function setLanguage(language, persist = true) {
     if (persist) {
         try { window.localStorage.setItem('permit-language', currentLanguage); } catch { /* Storage may be unavailable. */ }
     }
+}
+
+function detectAppPlatform(userAgent = '', platform = '', maxTouchPoints = 0) {
+    const isIpadDesktopMode = platform === 'MacIntel' && maxTouchPoints > 1;
+    return /iPhone|iPad|iPod/i.test(userAgent) || isIpadDesktopMode
+        ? 'ios'
+        : /Android/i.test(userAgent) || /Android/i.test(platform)
+            ? 'android'
+            : 'web';
+}
+
+function configureAppDestination() {
+    const destination = detectAppPlatform(
+        navigator.userAgent || '',
+        navigator.userAgentData?.platform || navigator.platform || '',
+        navigator.maxTouchPoints || 0
+    );
+    platformDestinations.forEach((link) => {
+        link.hidden = link.dataset.platform !== destination;
+    });
 }
 
 function commitView(viewName, skipFallbackEntry = false, forceEntry = false) {
@@ -417,6 +438,18 @@ function preparePaintCanvas() {
     return context;
 }
 
+function setEdgeReveal(progress) {
+    const segment = Math.max(0, Math.min(1, progress)) * 4;
+    const top = Math.max(0, Math.min(1, segment));
+    const right = Math.max(0, Math.min(1, segment - 1));
+    const bottom = Math.max(0, Math.min(1, segment - 2));
+    const left = Math.max(0, Math.min(1, segment - 3));
+    cardObject.style.setProperty('--edge-top-hidden', `${(1 - top) * 100}%`);
+    cardObject.style.setProperty('--edge-right-hidden', `${(1 - right) * 100}%`);
+    cardObject.style.setProperty('--edge-bottom-hidden', `${(1 - bottom) * 100}%`);
+    cardObject.style.setProperty('--edge-left-hidden', `${(1 - left) * 100}%`);
+}
+
 function paintPermit(runId) {
     const context = preparePaintCanvas();
     const rows = 9;
@@ -433,6 +466,7 @@ function paintPermit(runId) {
             }
 
             const progress = Math.min(1, (now - start) / duration);
+            setEdgeReveal(progress);
             const rowPosition = progress * rows;
             const rowIndex = Math.min(rows - 1, Math.floor(rowPosition));
             const rowProgress = Math.min(1, rowPosition - rowIndex);
@@ -471,19 +505,41 @@ function paintPermit(runId) {
 
 function resetGeneration() {
     window.clearTimeout(flipTimer);
-    cardObject.classList.remove('is-back', 'is-ready', 'is-flipping');
+    cardObject.classList.remove('is-back', 'is-ready', 'is-flipping', 'is-presenting', 'is-shining', 'is-new', 'is-entering-stage', 'is-stage-pending');
+    cardObject.classList.add('is-painting');
     cardObject.setAttribute('aria-disabled', 'true');
     cardObject.setAttribute('aria-pressed', 'false');
+    setEdgeReveal(0);
     setProgress(0);
     preparePaintCanvas();
 }
 
-function markComplete() {
+function markComplete(interactive = true, newFinish = true) {
     paintCanvas.hidden = true;
     brushHead.classList.remove('visible');
+    cardObject.classList.remove('is-painting');
+    cardObject.classList.toggle('is-new', newFinish);
+    setEdgeReveal(1);
     setProgress(100);
+    cardObject.classList.toggle('is-ready', interactive);
+    cardObject.setAttribute('aria-disabled', String(!interactive));
+}
+
+async function presentCompletedCard(runId) {
+    if (runId !== generationRun) return false;
+    if (!reducedMotion) {
+        await playExitAnimation(cardObject, 'is-presenting', 'new-card-spin', 1500);
+        if (runId !== generationRun) return false;
+        cardObject.classList.add('is-new', 'is-shining');
+        await new Promise((resolve) => window.setTimeout(resolve, 920));
+        cardObject.classList.remove('is-shining');
+        if (runId !== generationRun) return false;
+    } else {
+        cardObject.classList.add('is-new');
+    }
     cardObject.classList.add('is-ready');
     cardObject.setAttribute('aria-disabled', 'false');
+    return true;
 }
 
 async function createPermit(prepared = false) {
@@ -505,7 +561,8 @@ async function createPermit(prepared = false) {
     if (!await animateProgress(84, 100, 520, runId)) return;
 
     generatedSignature = paramsSignature(permitParams);
-    markComplete();
+    markComplete(false, false);
+    if (!await presentCompletedCard(runId)) return;
     if (runId === generationRun && activeView === 'creating') await openPreview('push');
 }
 
@@ -533,8 +590,8 @@ function flipCard() {
 function resizeCard() {
     const mount = isFullscreen ? fullscreenMount : activeView === 'preview' ? previewMount : creationMount;
     if (!mount || !mount.clientWidth) return;
-    const availableWidth = Math.max(280, mount.clientWidth - 24);
-    const availableHeight = Math.max(210, mount.clientHeight - 24);
+    const availableWidth = Math.max(1, mount.clientWidth - 24);
+    const availableHeight = Math.max(1, mount.clientHeight - 24);
     const maxScale = isFullscreen ? 1.65 : 1;
     const scale = Math.min(maxScale, availableWidth / 560, availableHeight / 356);
     document.documentElement.style.setProperty('--card-scale', scale.toFixed(3));
@@ -618,10 +675,24 @@ async function discardCardAndOpenForm(historyMode = 'push') {
 
 async function openCreating(historyMode = 'push', shouldGenerate = true) {
     setCardData(permitParams);
-    if (shouldGenerate) resetGeneration();
+    if (shouldGenerate) {
+        resetGeneration();
+        cardObject.classList.add('is-stage-pending');
+    }
+    const entranceRun = generationRun;
     await switchView('creating', historyMode);
-    if (shouldGenerate) createPermit(true);
-    else markComplete();
+    if (activeView !== 'creating' || entranceRun !== generationRun) {
+        cardObject.classList.remove('is-stage-pending');
+        return;
+    }
+    if (shouldGenerate) {
+        cardObject.classList.remove('is-stage-pending');
+        await playExitAnimation(cardObject, 'is-entering-stage', 'blank-card-slide-in', 900);
+        if (activeView !== 'creating' || entranceRun !== generationRun) return;
+        createPermit(true);
+    } else {
+        markComplete();
+    }
 }
 
 async function openPreview(historyMode = 'push') {
@@ -867,6 +938,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 window.addEventListener('resize', resizeCard, { passive: true });
+window.visualViewport?.addEventListener('resize', resizeCard, { passive: true });
 window.addEventListener('popstate', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const viewName = urlParams.get('step');
@@ -892,6 +964,7 @@ async function initialize() {
     let savedLanguage = 'zh';
     try { savedLanguage = window.localStorage.getItem('permit-language') || 'zh'; } catch { /* Storage may be unavailable. */ }
     setLanguage(savedLanguage, false);
+    configureAppDestination();
     const validInput = form.elements.Valid;
     const today = new Date();
     const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
