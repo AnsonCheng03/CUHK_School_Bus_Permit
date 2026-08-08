@@ -1,13 +1,14 @@
 const CACHE_PREFIX = 'cu-bus-permit-';
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+const RELEASE_VERSION = new URL(self.location.href).searchParams.get('v') || 'dev';
+const CACHE_NAME = `${CACHE_PREFIX}${RELEASE_VERSION}`;
 const APP_SHELL = [
     './',
     './index.html',
-    './style.css',
-    './spa.css',
-    './script.js',
+    `./style.css?v=${RELEASE_VERSION}`,
+    `./spa.css?v=${RELEASE_VERSION}`,
+    `./script.js?v=${RELEASE_VERSION}`,
     './site.webmanifest',
-    './getcard/style.css',
+    `./getcard/style.css?v=${RELEASE_VERSION}`,
     './getcard/images/CUHK.png',
     './getcard/images/schbus_d.png',
     './getcard/images/schbus_l.png',

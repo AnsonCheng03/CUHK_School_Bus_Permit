@@ -770,7 +770,7 @@ body.discarding-card .app-promo {
 }
 .card-object.is-presenting {
     pointer-events: none;
-    animation: new-card-spin 1350ms cubic-bezier(.2,.68,.2,1) both;
+    animation: new-card-spin 1050ms cubic-bezier(.2,.72,.2,1) both;
 }
 .card-object.is-painting .card,
 .card-object.is-painting .card-back {
@@ -1236,8 +1236,8 @@ body.discarding-card .app-promo {
 }
 @keyframes new-card-spin {
     0% { transform: rotateX(0deg) rotateY(0deg) translateY(0) scale(1); }
-    46% { transform: rotateX(2deg) rotateY(180deg) translateY(-7px) scale(1.025); }
-    100% { transform: rotateX(0deg) rotateY(360deg) translateY(0) scale(1); }
+    50% { transform: rotateX(2deg) rotateY(540deg) translateY(-7px) scale(1.025); }
+    100% { transform: rotateX(0deg) rotateY(1080deg) translateY(0) scale(1); }
 }
 
 @keyframes blank-card-slide-in {

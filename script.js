@@ -1,3 +1,4 @@
+const assetVersion = new URL(document.currentScript.src).searchParams.get('v') || 'dev';
 const form = document.querySelector('.permit-form');
 const views = new Map([...document.querySelectorAll('.spa-view')].map((view) => [view.dataset.view, view]));
 const currentStep = document.querySelector('.current-step');
@@ -680,7 +681,7 @@ function markComplete(interactive = true, newFinish = true) {
 async function presentCompletedCard(runId) {
     if (runId !== generationRun) return false;
     if (!reducedMotion) {
-        await playExitAnimation(cardObject, 'is-presenting', 'new-card-spin', 2080);
+        await playExitAnimation(cardObject, 'is-presenting', 'new-card-spin', 1180);
         if (runId !== generationRun) return false;
         cardObject.classList.add('is-new', 'is-shining');
         await new Promise((resolve) => window.setTimeout(resolve, 920));
@@ -1127,7 +1128,7 @@ function registerServiceWorker() {
     if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
     window.addEventListener('load', async () => {
         try {
-            const registration = await navigator.serviceWorker.register('./service-worker.js', {
+            const registration = await navigator.serviceWorker.register(`./service-worker.js?v=${encodeURIComponent(assetVersion)}`, {
                 scope: './',
                 updateViaCache: 'none'
             });

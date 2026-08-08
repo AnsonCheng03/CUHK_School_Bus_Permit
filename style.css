@@ -462,11 +462,18 @@ legend,
 }
 
 .field-wide { grid-column: 1 / -1; }
+.field {
+    width: 100%;
+    min-width: 0;
+}
 .field em { margin-left: 5px; color: #b53f56; font-size: 9px; font-style: normal; }
 .field small { color: #988f9d; font-size: 9px; font-weight: 600; text-transform: uppercase; }
 
 .field input {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    display: block;
     height: 48px;
     margin: 0;
     padding: 0 15px;
