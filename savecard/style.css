@@ -535,9 +535,10 @@ button {
 @media print {
     html,
     body {
-        display: flex;
-        justify-content: right;
-        align-items: center;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
         print-color-adjust: exact !important;
         -webkit-print-color-adjust: exact !important;
     }
@@ -555,11 +556,9 @@ button {
     .preview-page,
     .preview-panel,
     .preview-canvas {
-        width: 100%;
+        width: 100% !important;
         min-height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: right;
+        display: block !important;
         margin: 0;
         padding: 0;
         border: 0;
@@ -569,8 +568,23 @@ button {
     }
 
     .preview-object {
+        width: 560px;
+        margin: 0 auto !important;
         transform: none !important;
         filter: none;
+    }
+
+    .preview-page {
+        height: 297mm !important;
+        min-height: 297mm !important;
+        display: table !important;
+        table-layout: fixed;
+    }
+
+    .preview-panel {
+        display: table-cell !important;
+        padding: 14mm 0 !important;
+        vertical-align: middle;
     }
 
     .card {

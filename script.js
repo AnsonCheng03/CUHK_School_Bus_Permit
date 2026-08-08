@@ -1,11 +1,16 @@
 const assetVersion = new URL(document.currentScript.src).searchParams.get('v') || 'dev';
 const form = document.querySelector('.permit-form');
+const pageShell = document.querySelector('.page-shell');
+const pageTitle = document.querySelector('#page-title');
+const stepPill = document.querySelector('.step-pill');
+const appStatus = document.querySelector('#app-status');
 const views = new Map([...document.querySelectorAll('.spa-view')].map((view) => [view.dataset.view, view]));
 const currentStep = document.querySelector('.current-step');
 const editButton = document.querySelector('.edit-link');
 const unofficialBadge = document.querySelector('.unofficial-badge');
 const brandHome = document.querySelector('.brand-home');
 const creationMount = document.querySelector('.creation-card-mount');
+const creationMain = document.querySelector('.creation-layout');
 const previewMount = document.querySelector('.preview-card-mount');
 const cardScaler = document.querySelector('.card-scaler');
 const card = document.querySelector('.card');
@@ -20,6 +25,7 @@ const generationProgressFill = document.querySelector('.generation-progress-fill
 const fullscreenPreview = document.querySelector('.fullscreen-preview');
 const fullscreenMount = document.querySelector('.fullscreen-card-mount');
 const fullscreenButton = document.querySelector('.fullscreen-button');
+const fullscreenCloseButton = document.querySelector('.fullscreen-close');
 const editPermitButton = document.querySelector('.edit-permit-button');
 const shareImageButton = document.querySelector('.share-image-button');
 const shareButtonLabel = shareImageButton.querySelector('.button-label');
@@ -28,6 +34,7 @@ const platformDestinations = [...document.querySelectorAll('[data-platform]')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
 const appLoader = document.querySelector('.app-loader');
+const cardAccessibleDescription = document.querySelector('#card-accessible-description');
 const titleMeta = document.querySelector('meta[name="title"]');
 const descriptionMeta = document.querySelector('meta[name="description"]');
 const robotsMeta = document.querySelector('meta[name="robots"]');
@@ -96,7 +103,7 @@ const seoByLanguage = {
 
 const translations = {
     zh: {
-        homeLabel: '返回校巴證製作首頁', brandName: '中大校巴資訊站', brandSub: '校巴證製作',
+        skipLink: '跳至主要內容', loadingLabel: '正在載入 CU Bus', loadingText: '正在載入', homeLabel: '返回校巴證製作首頁', brandName: '中大校巴資訊站', brandSub: '校巴證製作',
         rebuild: '重新製作', unofficial: '非官方工具', formTitle: '校巴證資料', busTypeLegend: '想乘搭哪種校巴？',
         transitTitle: '穿梭校巴', transitSub: '校園穿梭路線', lessonTitle: '轉堂校巴', lessonSub: '課堂接駁路線',
         nameLabel: '姓名', required: '必填', namePlaceholder: '例如：CHAN Siu-ming（陳小明）',
@@ -106,11 +113,13 @@ const translations = {
         previewLabel: '校巴證及操作', appLabel: '下載 CU Bus 應用程式', downloadIos: '在 App Store 下載 CU Bus', downloadAndroid: '在 Google Play 下載 CU Bus', visitWebsite: '前往 CU Bus 網站', visitWebsiteText: '探索 CU Bus', qrLabel: 'CU Bus 網站 QR code',
         qrAlt: '前往 cu-bus.online 的 QR code', scanWebsite: '掃描瀏覽網站', actionsLabel: '校巴證操作',
         previewButton: '預覽', editButton: '編輯', shareButton: '分享圖片', printButton: '列印',
-        footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽',
-        showBack: '查看校巴證條款', showFront: '翻回校巴證正面', shareWorking: '製作中…', shareSaved: '已儲存', shareFailed: '未能分享', shareTitle: '中大校巴證'
+        footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽', closeFullscreen: '關閉全螢幕預覽',
+        stepForm: '第 1 步，共 3 步：輸入校巴證資料', stepCreating: '第 2 步，共 3 步：正在繪製校巴證', stepPreview: '第 3 步，共 3 步：預覽校巴證',
+        creatingStatus: '正在繪製校巴證，完成後會自動前往預覽。', previewStatus: '校巴證已完成。你可以翻轉校巴證、預覽、編輯、分享或列印。',
+        showBack: '查看校巴證乘車須知', showFront: '翻回校巴證正面', shareWorking: '正在製作分享圖片', shareSaved: '圖片已儲存', shareFailed: '未能分享圖片', shareTitle: '中大校巴證'
     },
     en: {
-        homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
+        skipLink: 'Skip to main content', loadingLabel: 'Loading CU Bus', loadingText: 'Loading', homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
         rebuild: 'Start again', unofficial: 'Unofficial tool', formTitle: 'Permit details', busTypeLegend: 'Which bus would you like to take?',
         transitTitle: 'Shuttle Bus', transitSub: 'Campus shuttle routes', lessonTitle: 'Meet-Class Bus', lessonSub: 'Between-class routes',
         nameLabel: 'Name', required: 'Required', namePlaceholder: 'e.g. CHAN Siu-ming',
@@ -120,8 +129,10 @@ const translations = {
         previewLabel: 'Permit and actions', appLabel: 'Download the CU Bus app', downloadIos: 'Download CU Bus on the App Store', downloadAndroid: 'Get CU Bus on Google Play', visitWebsite: 'Visit the CU Bus website', visitWebsiteText: 'Explore CU Bus', qrLabel: 'CU Bus website QR code',
         qrAlt: 'QR code for cu-bus.online', scanWebsite: 'Scan to visit', actionsLabel: 'Permit actions',
         previewButton: 'Preview', editButton: 'Edit', shareButton: 'Share image', printButton: 'Print',
-        footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview',
-        showBack: 'View permit terms', showFront: 'Return to the permit front', shareWorking: 'Creating…', shareSaved: 'Saved', shareFailed: 'Unable to share', shareTitle: 'CUHK School Bus Permit'
+        footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview', closeFullscreen: 'Close full-screen preview',
+        stepForm: 'Step 1 of 3: Enter permit details', stepCreating: 'Step 2 of 3: Creating permit', stepPreview: 'Step 3 of 3: Preview permit',
+        creatingStatus: 'Creating your permit. The preview will open automatically when it is ready.', previewStatus: 'Your permit is ready. You can flip, preview, edit, share, or print it.',
+        showBack: 'View passenger notice', showFront: 'Return to the permit front', shareWorking: 'Creating share image', shareSaved: 'Image saved', shareFailed: 'Unable to share image', shareTitle: 'CUHK School Bus Permit'
     }
 };
 
@@ -258,6 +269,7 @@ function updateHistory(viewName, mode) {
 function updateHeader(viewName) {
     const step = viewName === 'form' ? '01' : viewName === 'creating' ? '02' : '03';
     currentStep.textContent = step;
+    stepPill.setAttribute('aria-label', t(viewName === 'form' ? 'stepForm' : viewName === 'creating' ? 'stepCreating' : 'stepPreview'));
     editButton.hidden = viewName === 'form';
     unofficialBadge.hidden = viewName !== 'form';
     siteHeader.hidden = viewName !== 'form';
@@ -286,6 +298,33 @@ function t(key) {
     return translations[currentLanguage]?.[key] || translations.zh[key] || key;
 }
 
+function announce(message) {
+    if (!appStatus) return;
+    appStatus.textContent = '';
+    window.requestAnimationFrame(() => { appStatus.textContent = message; });
+}
+
+function updateCardAccessibleDescription(params = permitParams, showBack = cardObject.classList.contains('is-back')) {
+    if (!cardAccessibleDescription) return;
+    if (showBack) {
+        const noticeLanguage = currentLanguage === 'en' ? 'en' : 'zh-HK';
+        const noticeItems = [...document.querySelectorAll(`.terms-list li > span[lang="${noticeLanguage}"]`)]
+            .map((item, index) => `${index + 1}. ${item.textContent.trim()}`);
+        cardAccessibleDescription.textContent = noticeItems.join(' ');
+        return;
+    }
+    const type = params.get('Type') === 'Lesson'
+        ? (currentLanguage === 'en' ? 'Meet-Class Bus Permit' : '轉堂校巴證')
+        : (currentLanguage === 'en' ? 'Shuttle Bus Permit' : '穿梭校巴證');
+    const name = params.get('Name') || (currentLanguage === 'en' ? 'Not provided' : '未提供');
+    const sid = params.get('SID') || '1155125528';
+    const major = params.get('Major') || 'B.A. in Fine Arts';
+    const valid = formatPermitDate(params.get('Valid')) || defaultPermitExpiry().display;
+    cardAccessibleDescription.textContent = currentLanguage === 'en'
+        ? `${type}. Name: ${name}. Student ID: ${sid}. Major: ${major}. Valid until: ${valid}.`
+        : `${type}。姓名：${name}。學生編號：${sid}。主修科目：${major}。有效期至：${valid}。`;
+}
+
 function setLanguage(language, persist = true) {
     currentLanguage = language === 'en' ? 'en' : 'zh';
     document.documentElement.lang = currentLanguage === 'en' ? 'en' : 'zh-HK';
@@ -306,8 +345,10 @@ function setLanguage(language, persist = true) {
         button.setAttribute('aria-label', currentLanguage === 'zh' ? 'Switch to English' : '切換至中文');
         button.setAttribute('lang', currentLanguage === 'zh' ? 'en' : 'zh-HK');
     });
+    updateHeader(activeView);
     updateSeo(activeView);
     setCardSide(cardObject.classList.contains('is-back'));
+    updateCardAccessibleDescription();
     if (persist) {
         void writeSavedValue(languagePreferenceKey, currentLanguage);
     }
@@ -339,7 +380,9 @@ function commitView(viewName, skipFallbackEntry = false, forceEntry = false) {
         isClosingFullscreen = false;
         fullscreenPreview.hidden = true;
         document.body.classList.remove('fullscreen-open');
-        cardObject.setAttribute('tabindex', '0');
+        pageShell.inert = false;
+        pageShell.removeAttribute('inert');
+        pageShell.removeAttribute('aria-hidden');
     }
 
     views.forEach((view, name) => {
@@ -359,7 +402,9 @@ function commitView(viewName, skipFallbackEntry = false, forceEntry = false) {
 
     if (viewName === 'creating') creationMount.append(cardScaler);
     if (viewName === 'preview') previewMount.append(cardScaler);
-    cardScaler.setAttribute('aria-hidden', viewName === 'form' ? 'true' : 'false');
+    const cardIsAvailable = viewName === 'preview';
+    cardScaler.setAttribute('aria-hidden', String(!cardIsAvailable));
+    cardObject.setAttribute('tabindex', cardIsAvailable && !isFullscreen ? '0' : '-1');
     resizeCard();
 }
 
@@ -419,6 +464,57 @@ function animateCardMove(fromRect) {
     }, 760);
 }
 
+function animateCardBackToPreview() {
+    if (reducedMotion) return Promise.resolve();
+
+    const fromRect = cardScaler.getBoundingClientRect();
+    const originRect = fullscreenMount.getBoundingClientRect();
+    const targetRect = previewMount.getBoundingClientRect();
+    if (!fromRect.width || !originRect.width || !targetRect.width) return Promise.resolve();
+
+    const availableWidth = Math.max(1, previewMount.clientWidth - 24);
+    const availableHeight = Math.max(1, previewMount.clientHeight - 24);
+    const targetScale = Math.min(1, availableWidth / 560, availableHeight / 356);
+    const originCenterX = originRect.left + originRect.width / 2;
+    const originCenterY = originRect.top + originRect.height / 2;
+    const startCenterX = fromRect.left + fromRect.width / 2;
+    const startCenterY = fromRect.top + fromRect.height / 2;
+    const targetCenterX = targetRect.left + targetRect.width / 2;
+    const targetCenterY = targetRect.top + targetRect.height / 2;
+    const runId = ++cardMoveRun;
+
+    window.clearTimeout(cardMoveTimer);
+    cardScaler.classList.remove('is-relocating');
+    cardScaler.style.setProperty('--card-move-x', `${startCenterX - originCenterX}px`);
+    cardScaler.style.setProperty('--card-move-y', `${startCenterY - originCenterY}px`);
+    cardScaler.style.setProperty('--card-move-scale', String(fromRect.width / 560));
+    cardScaler.getBoundingClientRect();
+    cardScaler.classList.add('is-relocating');
+
+    requestAnimationFrame(() => {
+        if (runId !== cardMoveRun) return;
+        cardScaler.style.setProperty('--card-move-x', `${targetCenterX - originCenterX}px`);
+        cardScaler.style.setProperty('--card-move-y', `${targetCenterY - originCenterY}px`);
+        cardScaler.style.setProperty('--card-move-scale', String(targetScale));
+    });
+
+    return new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+            if (settled || runId !== cardMoveRun) return;
+            settled = true;
+            window.clearTimeout(cardMoveTimer);
+            cardScaler.removeEventListener('transitionend', onTransitionEnd);
+            resolve();
+        };
+        const onTransitionEnd = (event) => {
+            if (event.target === cardScaler && event.propertyName === 'transform') finish();
+        };
+        cardMoveTimer = window.setTimeout(finish, 760);
+        cardScaler.addEventListener('transitionend', onTransitionEnd);
+    });
+}
+
 async function switchView(viewName, historyMode = 'push', skipViewTransition = false) {
     updateHistory(viewName, historyMode);
     generationRun += viewName === 'form' ? 1 : 0;
@@ -469,6 +565,7 @@ function setCardData(params) {
     document.querySelector('.studatas .SID .value span').textContent = params.get('SID') || '1155125528';
     document.querySelector('.studatas .Major .value span').textContent = params.get('Major') || 'B.A. in Fine Arts';
     document.querySelector('.studatas .Valid .value span').textContent = formatPermitDate(params.get('Valid')) || defaultValid;
+    updateCardAccessibleDescription(params);
 }
 
 function formatPermitDate(value) {
@@ -528,11 +625,13 @@ function minimumStartupTime() {
 function dismissAppLoader() {
     if (!appLoader) {
         document.body.classList.remove('is-booting');
+        document.body.setAttribute('aria-busy', 'false');
         return Promise.resolve();
     }
     if (reducedMotion) {
         appLoader.hidden = true;
         document.body.classList.remove('is-booting');
+        document.body.setAttribute('aria-busy', 'false');
         return Promise.resolve();
     }
 
@@ -546,6 +645,7 @@ function dismissAppLoader() {
             appLoader.removeEventListener('animationend', onAnimationEnd);
             appLoader.hidden = true;
             document.body.classList.remove('is-booting');
+            document.body.setAttribute('aria-busy', 'false');
             resolve();
         };
         const onAnimationEnd = (event) => {
@@ -557,6 +657,10 @@ function dismissAppLoader() {
 }
 
 function animateProgress(from, to, duration, runId) {
+    if (reducedMotion) {
+        setProgress(to);
+        return Promise.resolve(runId === generationRun);
+    }
     return new Promise((resolve) => {
         const start = performance.now();
         function frame(now) {
@@ -574,6 +678,7 @@ function animateProgress(from, to, duration, runId) {
 }
 
 function preparePaintCanvas() {
+    paintCanvas.classList.remove('is-fading');
     paintCanvas.hidden = false;
     const context = paintCanvas.getContext('2d');
     context.clearRect(0, 0, 560, 356);
@@ -604,6 +709,13 @@ function setEdgeReveal(progress) {
 
 function paintPermit(runId) {
     const context = preparePaintCanvas();
+    if (reducedMotion) {
+        context.clearRect(0, 0, 560, 356);
+        paintCanvas.hidden = true;
+        setEdgeReveal(1);
+        setProgress(84);
+        return Promise.resolve(runId === generationRun);
+    }
     const rows = 9;
     const duration = 3600;
     const start = performance.now();
@@ -646,10 +758,28 @@ function paintPermit(runId) {
             if (progress < 1) {
                 requestAnimationFrame(frame);
             } else {
-                context.clearRect(0, 0, 560, 356);
                 brushHead.classList.remove('visible');
-                paintCanvas.hidden = true;
-                resolve(true);
+                paintCanvas.classList.add('is-fading');
+
+                let settled = false;
+                const finishFade = () => {
+                    if (settled) return;
+                    settled = true;
+                    window.clearTimeout(fadeTimer);
+                    paintCanvas.removeEventListener('transitionend', onFadeEnd);
+                    const isCurrentRun = runId === generationRun;
+                    if (isCurrentRun) {
+                        context.clearRect(0, 0, 560, 356);
+                        paintCanvas.hidden = true;
+                        paintCanvas.classList.remove('is-fading');
+                    }
+                    resolve(isCurrentRun);
+                };
+                const onFadeEnd = (event) => {
+                    if (event.target === paintCanvas && event.propertyName === 'opacity') finishFade();
+                };
+                const fadeTimer = window.setTimeout(finishFade, 720);
+                paintCanvas.addEventListener('transitionend', onFadeEnd);
             }
         }
         requestAnimationFrame(frame);
@@ -725,6 +855,7 @@ function setCardSide(showBack) {
     cardObject.setAttribute('aria-label', showBack ? t('showFront') : t('showBack'));
     cardFront.setAttribute('aria-hidden', String(showBack));
     cardBack.setAttribute('aria-hidden', String(!showBack));
+    updateCardAccessibleDescription(permitParams, showBack);
     if (currentlyBack === showBack) return;
 
     window.clearTimeout(flipTimer);
@@ -734,7 +865,6 @@ function setCardSide(showBack) {
 }
 
 function flipCard() {
-    if (isFullscreen) return;
     if (cardObject.classList.contains('is-ready')) {
         setCardSide(!cardObject.classList.contains('is-back'));
     }
@@ -762,6 +892,7 @@ function populateForm(params) {
 
 async function openForm(historyMode = 'push') {
     await switchView('form', historyMode);
+    if (appInitialized) pageTitle?.focus({ preventScroll: true });
 }
 
 async function discardCardAndOpenForm(historyMode = 'push') {
@@ -773,7 +904,7 @@ async function discardCardAndOpenForm(historyMode = 'push') {
 
     isDiscarding = true;
     editPermitButton.disabled = true;
-    cardObject.setAttribute('tabindex', '-1');
+    cardObject.setAttribute('tabindex', '0');
     window.clearTimeout(cardMoveTimer);
     cardMoveRun++;
     cardScaler.classList.remove('is-relocating');
@@ -834,6 +965,8 @@ async function openCreating(historyMode = 'push', shouldGenerate = true) {
     }
     const entranceRun = generationRun;
     await switchView('creating', historyMode);
+    creationMain?.focus({ preventScroll: true });
+    announce(t('creatingStatus'));
     if (activeView !== 'creating' || entranceRun !== generationRun) {
         cardObject.classList.remove('is-stage-pending');
         return;
@@ -854,6 +987,8 @@ async function openPreview(historyMode = 'push') {
     markComplete();
     setCardSide(false);
     await switchView('preview', historyMode);
+    cardObject.focus({ preventScroll: true });
+    announce(t('previewStatus'));
 }
 
 function drawAmbient() {
@@ -891,31 +1026,45 @@ function drawAmbient() {
 }
 
 function openFullscreenPreview() {
+    const cardStartRect = cardScaler.getBoundingClientRect();
     isFullscreen = true;
     isClosingFullscreen = false;
     setCardSide(false);
     fullscreenPreview.hidden = false;
     fullscreenMount.append(cardScaler);
     document.body.classList.add('fullscreen-open');
-    cardObject.setAttribute('tabindex', '-1');
+    pageShell.inert = true;
+    pageShell.setAttribute('inert', '');
+    pageShell.setAttribute('aria-hidden', 'true');
+    cardObject.setAttribute('tabindex', '0');
+    resizeCard();
+    animateCardMove(cardStartRect);
     requestAnimationFrame(() => {
-        resizeCard();
-        fullscreenPreview.focus({ preventScroll: true });
+        fullscreenCloseButton.focus({ preventScroll: true });
     });
 }
 
 async function closeFullscreenPreview() {
     if (!isFullscreen || isClosingFullscreen) return;
     isClosingFullscreen = true;
-    if (!reducedMotion) {
-        await playExitAnimation(fullscreenPreview, 'is-closing', 'fullscreen-out', 340);
-    }
+    if (!reducedMotion) fullscreenPreview.classList.add('is-closing');
+    await animateCardBackToPreview();
     isFullscreen = false;
     previewMount.append(cardScaler);
-    fullscreenPreview.hidden = true;
     document.body.classList.remove('fullscreen-open');
+    pageShell.inert = false;
+    pageShell.removeAttribute('inert');
+    pageShell.removeAttribute('aria-hidden');
+    resizeCard();
+    window.clearTimeout(cardMoveTimer);
+    cardMoveRun++;
+    cardScaler.classList.remove('is-relocating');
+    cardScaler.style.removeProperty('--card-move-x');
+    cardScaler.style.removeProperty('--card-move-y');
+    cardScaler.style.removeProperty('--card-move-scale');
+    fullscreenPreview.hidden = true;
+    fullscreenPreview.classList.remove('is-closing');
     cardObject.setAttribute('tabindex', '0');
-    requestAnimationFrame(resizeCard);
     fullscreenButton.focus({ preventScroll: true });
     isClosingFullscreen = false;
 }
@@ -1032,7 +1181,9 @@ async function renderPermitImage() {
 async function sharePermitImage() {
     const originalLabel = t('shareButton');
     shareImageButton.disabled = true;
+    shareImageButton.setAttribute('aria-busy', 'true');
     shareButtonLabel.textContent = t('shareWorking');
+    announce(t('shareWorking'));
     try {
         const blob = await renderPermitImage();
         const file = new File([blob], 'cuhk-bus-permit.png', { type: 'image/png' });
@@ -1047,12 +1198,17 @@ async function sharePermitImage() {
             link.click();
             window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
             shareButtonLabel.textContent = t('shareSaved');
+            announce(t('shareSaved'));
         }
     } catch (error) {
-        if (error?.name !== 'AbortError') shareButtonLabel.textContent = t('shareFailed');
+        if (error?.name !== 'AbortError') {
+            shareButtonLabel.textContent = t('shareFailed');
+            announce(t('shareFailed'));
+        }
         else shareButtonLabel.textContent = originalLabel;
     } finally {
         shareImageButton.disabled = false;
+        shareImageButton.removeAttribute('aria-busy');
     }
 }
 
@@ -1061,10 +1217,15 @@ form.addEventListener('submit', async (event) => {
     permitParams = new URLSearchParams(new FormData(form));
     window.clearTimeout(draftSaveTimer);
     void saveFormDraft();
-    const buttonLabel = form.querySelector('.generate-button span');
+    const generateButton = form.querySelector('.generate-button');
+    const buttonLabel = generateButton.querySelector('span');
+    generateButton.disabled = true;
+    generateButton.setAttribute('aria-busy', 'true');
     buttonLabel.textContent = t('generateEntering');
     await openCreating('push', true);
     buttonLabel.textContent = t('generate');
+    generateButton.disabled = false;
+    generateButton.removeAttribute('aria-busy');
 });
 
 form.addEventListener('input', scheduleFormDraftSave);
@@ -1094,11 +1255,26 @@ languageToggles.forEach((button) => {
 });
 fullscreenButton.addEventListener('click', openFullscreenPreview);
 editPermitButton.addEventListener('click', () => discardCardAndOpenForm('push'));
-fullscreenPreview.addEventListener('click', closeFullscreenPreview);
+fullscreenCloseButton.addEventListener('click', closeFullscreenPreview);
+fullscreenPreview.addEventListener('click', (event) => {
+    if (event.target.closest('.card-scaler, .fullscreen-close')) return;
+    closeFullscreenPreview();
+});
 shareImageButton.addEventListener('click', sharePermitImage);
 document.querySelector('.printbtn').addEventListener('click', () => window.print());
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && isFullscreen) closeFullscreenPreview();
+    if (!isFullscreen) return;
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        closeFullscreenPreview();
+    } else if (event.key === 'Tab') {
+        event.preventDefault();
+        const focusTargets = [fullscreenCloseButton, cardObject];
+        const currentIndex = focusTargets.indexOf(document.activeElement);
+        const step = event.shiftKey ? -1 : 1;
+        const nextIndex = (currentIndex + step + focusTargets.length) % focusTargets.length;
+        focusTargets[nextIndex].focus({ preventScroll: true });
+    }
 });
 
 window.addEventListener('resize', resizeCard, { passive: true });

@@ -15,6 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#180627">
     <meta name="application-name" content="中大校巴證製作器">
+    <meta name="apple-itunes-app" content="app-id=6736944558">
     <link rel="canonical" href="https://cu-bus.online/_permit/">
     <link rel="manifest" href="site.webmanifest">
     <link rel="icon" type="image/png" href="bus-app-icon-256.png">
@@ -58,17 +59,18 @@
             }
         }
     </script>
-    <link href="getcard/style.css?v=20260808145558" rel="stylesheet">
-    <link href="style.css?v=20260808145558" rel="stylesheet">
-    <link href="spa.css?v=20260808145558" rel="stylesheet">
-    <script src="script.js?v=20260808145558" defer></script>
+    <link href="getcard/style.css?v=20260809000427" rel="stylesheet">
+    <link href="style.css?v=20260809000427" rel="stylesheet">
+    <link href="spa.css?v=20260809000427" rel="stylesheet">
+    <script src="script.js?v=20260809000427" defer></script>
     <link rel="preload" as="image" href="getcard/images/schbus_d.png">
     <link rel="preload" as="image" href="getcard/images/schbus_l.png">
     <link rel="preload" as="image" href="getcard/images/CUHK.png">
 </head>
 
-<body class="is-booting">
-    <div class="app-loader" role="status" aria-live="polite" aria-label="正在載入 CU Bus">
+<body class="is-booting" aria-busy="true">
+    <a class="skip-link" href="#main-content" data-i18n="skipLink">跳至主要內容</a>
+    <div class="app-loader" role="status" aria-live="polite" aria-label="正在載入 CU Bus" data-i18n-aria-label="loadingLabel">
         <div class="app-loader-visual" aria-hidden="true">
             <!-- <span class="app-loader-route"></span> -->
             <span class="app-loader-icon-wrap">
@@ -77,7 +79,7 @@
         </div>
         <strong>CU Bus</strong>
         <span class="app-loader-progress" aria-hidden="true"><i></i></span>
-        <span class="app-loader-status-text">正在載入</span>
+        <span class="app-loader-status-text" data-i18n="loadingText">正在載入</span>
     </div>
 
     <canvas class="ambient-canvas" aria-hidden="true"></canvas>
@@ -106,7 +108,7 @@
             </a>
 
             <div class="header-meta">
-                <span class="step-pill"><b class="current-step">01</b> / 03</span>
+                <span class="step-pill" role="status" aria-live="polite" aria-atomic="true"><b class="current-step">01</b> / 03</span>
                 <button class="edit-link" type="button" hidden>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
                     <span data-i18n="rebuild">重新製作</span>
@@ -116,12 +118,12 @@
             </div>
         </header>
 
-        <div class="spa-stage">
-            <section class="spa-view form-view is-active" data-view="form" aria-labelledby="page-title">
-                <main class="builder-layout form-only">
+        <div class="spa-stage" id="main-content" tabindex="-1">
+            <div class="spa-view form-view is-active" data-view="form">
+                <main class="builder-layout form-only" aria-labelledby="page-title">
                     <section class="form-panel" aria-labelledby="page-title">
                         <div class="form-heading">
-                            <h1 id="page-title" data-i18n="formTitle">校巴證資料</h1>
+                            <h1 id="page-title" tabindex="-1" data-i18n="formTitle">校巴證資料</h1>
                         </div>
 
                         <form class="permit-form">
@@ -132,14 +134,14 @@
                                     <label for="student">
                                         <span class="type-icon" aria-hidden="true">01</span>
                                         <span><strong data-i18n="transitTitle">穿梭校巴</strong><small data-i18n="transitSub">校園穿梭路線</small></span>
-                                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 10 2.5 2.5L14 7" /></svg>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="m8 12 2.6 2.6L16.5 9" /></svg>
                                     </label>
 
                                     <input id="admin" name="Type" type="radio" value="Lesson">
                                     <label for="admin">
                                         <span class="type-icon" aria-hidden="true">02</span>
                                         <span><strong data-i18n="lessonTitle">轉堂校巴</strong><small data-i18n="lessonSub">課堂接駁路線</small></span>
-                                        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 10 2.5 2.5L14 7" /></svg>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="m8 12 2.6 2.6L16.5 9" /></svg>
                                     </label>
                                 </div>
                             </fieldset>
@@ -150,11 +152,11 @@
                                     <input placeholder="例如：CHAN Siu-ming（陳小明）" data-i18n-placeholder="namePlaceholder" name="Name" type="text" maxlength="30" autocomplete="name" required>
                                 </label>
                                 <label class="field">
-                                    <span><span data-i18n="sidLabel">學生編號</span> <small>SID</small></span>
+                                    <span><span data-i18n="sidLabel">學生編號</span> <small lang="en">SID</small></span>
                                     <input placeholder="例如：1155125528" data-i18n-placeholder="sidPlaceholder" name="SID" type="number" min="1000000000" max="1500000000" inputmode="numeric">
                                 </label>
                                 <label class="field">
-                                    <span><span data-i18n="majorLabel">主修科目</span> <small>Major</small></span>
+                                    <span><span data-i18n="majorLabel">主修科目</span> <small lang="en">Major</small></span>
                                     <input placeholder="例如：Fine Arts" data-i18n-placeholder="majorPlaceholder" name="Major" type="text" maxlength="50">
                                 </label>
                                 <label class="field field-wide">
@@ -176,10 +178,10 @@
                         </form>
                     </section>
                 </main>
-            </section>
+            </div>
 
-            <section class="spa-view creation-view" data-view="creating" aria-label="正在繪製校巴證" data-i18n-aria-label="creatingLabel" hidden>
-                <main class="creation-layout">
+            <div class="spa-view creation-view" data-view="creating" hidden>
+                <main class="creation-layout" aria-label="正在繪製校巴證" data-i18n-aria-label="creatingLabel" tabindex="-1">
                     <section class="permit-theatre" aria-label="校巴證繪製舞台" data-i18n-aria-label="theatreLabel">
                         <div class="creation-card-mount card-mount"></div>
                         <div class="generation-progress" role="progressbar" aria-label="校巴證製作進度" data-i18n-aria-label="progressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -187,10 +189,10 @@
                         </div>
                     </section>
                 </main>
-            </section>
+            </div>
 
-            <section class="spa-view preview-view" data-view="preview" aria-label="校巴證及操作" data-i18n-aria-label="previewLabel" hidden>
-                <main class="preview-panel-spa">
+            <div class="spa-view preview-view" data-view="preview" hidden>
+                <main class="preview-panel-spa" aria-label="校巴證及操作" data-i18n-aria-label="previewLabel">
                     <div class="preview-canvas-spa">
                         <div class="preview-card-mount card-mount"></div>
                     </div>
@@ -241,8 +243,10 @@
                             <span data-i18n="printButton">列印</span>
                         </button>
                 </section>
-            </section>
+            </div>
         </div>
+
+        <p class="sr-only" id="app-status" role="status" aria-live="polite" aria-atomic="true"></p>
 
         <footer class="site-footer">
             <span data-i18n="footerCommunity">為中大社群而製作</span>
@@ -251,11 +255,15 @@
     </div>
 
     <div class="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" data-i18n-aria-label="fullscreenLabel" tabindex="-1" hidden>
+        <button class="fullscreen-close" type="button" aria-label="關閉全螢幕預覽" data-i18n-aria-label="closeFullscreen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
         <div class="fullscreen-card-mount card-mount"></div>
     </div>
 
     <div class="card-scaler" aria-hidden="true">
-        <div class="card-object" role="button" tabindex="0" aria-label="查看校巴證條款" aria-disabled="true">
+        <p class="sr-only" id="card-accessible-description"></p>
+        <div class="card-object" role="button" tabindex="-1" aria-label="查看校巴證條款" aria-describedby="card-accessible-description" aria-disabled="true" aria-pressed="false">
             <span class="card-edge edge-left" aria-hidden="true"></span>
             <span class="card-edge edge-right" aria-hidden="true"></span>
             <span class="card-edge edge-top" aria-hidden="true"></span>
@@ -266,12 +274,12 @@
                     <div class="details">
                         <div class="header">
                             <div class="logo"><img src="getcard/images/CUHK.png" alt=""></div>
-                            <div class="schname"><span>香港中文大學</span><span> The Chinese University of Hong Kong</span></div>
-                            <div class="hinttxt"><span>落車前請按鐘一次</span><span>To Stop Press The Bell Once</span></div>
+                            <div class="schname"><span lang="zh-HK">香港中文大學</span><span lang="en"> The Chinese University of Hong Kong</span></div>
+                            <div class="hinttxt"><span lang="zh-HK">落車前請按鐘一次</span><span lang="en">To Stop Press The Bell Once</span></div>
                         </div>
-                        <div class="cardname"><h1></h1><h2></h2></div>
+                        <div class="cardname"><h1 lang="zh-HK"></h1><h2 lang="en"></h2></div>
                         <div class="routeavil">
-                            <div class="desctxt"><span>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span><span>The Permit Holder is allowed to ride on the following routes</span></div>
+                            <div class="desctxt"><span lang="zh-HK">持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span><span lang="en">The Permit Holder is allowed to ride on the following routes</span></div>
                             <div class="routes">
                                 <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">1</span>
                                 <span class="transit" style="background: linear-gradient(90deg, #fff149 0%, #f3b53a 100%)">2</span>
@@ -287,10 +295,10 @@
                             </div>
                         </div>
                         <div class="studatas">
-                            <div class="Name"><div class="desc"><span>學生姓名</span><span>Name</span></div><div class="value"><span></span></div></div>
-                            <div class="SID"><div class="desc"><span>學生編號</span><span>Student ID</span></div><div class="value"><span></span></div></div>
-                            <div class="Major"><div class="desc"><span>主修科目</span><span>Major</span></div><div class="value"><span></span></div></div>
-                            <div class="Valid"><div class="desc"><span>有效期至</span><span>Valid Until</span></div><div class="value"><span></span></div></div>
+                            <div class="Name"><div class="desc"><span lang="zh-HK">學生姓名</span><span lang="en">Name</span></div><div class="value"><span></span></div></div>
+                            <div class="SID"><div class="desc"><span lang="zh-HK">學生編號</span><span lang="en">Student ID</span></div><div class="value"><span></span></div></div>
+                            <div class="Major"><div class="desc"><span lang="zh-HK">主修科目</span><span lang="en">Major</span></div><div class="value"><span></span></div></div>
+                            <div class="Valid"><div class="desc"><span lang="zh-HK">有效期至</span><span lang="en">Valid Until</span></div><div class="value"><span></span></div></div>
                         </div>
                     </div>
                 </div>
@@ -302,21 +310,21 @@
                 <header class="terms-header">
                     <span class="terms-monogram"><img src="bus-app-icon-256.png" alt=""></span>
                     <div>
-                        <strong>使用條款</strong>
-                        <span>Terms &amp; Notice</span>
+                        <strong lang="zh-HK">乘車須知</strong>
+                        <span lang="en">Passenger Notice</span>
                     </div>
-                    <span class="terms-status">非官方 · Unofficial</span>
+                    <span class="terms-status"><span lang="zh-HK">非官方</span><span aria-hidden="true"> · </span><span lang="en">Unofficial</span></span>
                 </header>
                 <ol class="terms-list">
-                    <li><span lang="zh-HK">下車前請按鐘一次；如未能按鐘，請清楚向司機講「前面有落」。</span><span lang="en">Press the bell once before alighting. If you cannot reach it, clearly notify the driver.</span></li>
-                    <li><span lang="zh-HK">落車時記得同司機講聲「唔該」；一句多謝，令大家嘅旅程更舒服。</span><span lang="en">Thank the driver when you leave; a little appreciation makes every journey better.</span></li>
-                    <li><span lang="zh-HK">乘車時請坐穩扶好，並主動讓座予有需要人士。</span><span lang="en">Remain seated or hold the handrail, and offer your seat to passengers in need.</span></li>
-                    <li><span lang="zh-HK">請勿阻塞車門或通道，並保持車廂整潔。</span><span lang="en">Keep doors and aisles clear, and help keep the bus clean.</span></li>
-                    <li><span lang="zh-HK">此證僅供創作及娛樂用途，並非中大官方證件；乘車時請出示學生證或其他有效證件。</span><span lang="en">This creative permit is for entertainment only. It is not an official CUHK document; present valid identification when boarding.</span></li>
+                    <li><span lang="zh-HK">落車前請按鐘；如未能按鐘，請預先通知車長。</span><span lang="en">Ring the bell before alighting. If unable to do so, notify the driver in advance.</span></li>
+                    <li><span lang="zh-HK">車輛停定前請留在座位或握穩扶手，上落車時請依序而行。</span><span lang="en">Remain seated or hold a handrail until the bus stops, and board or alight in order.</span></li>
+                    <li><span lang="zh-HK">請優先讓座予有需要人士，並避免滋擾其他乘客。</span><span lang="en">Offer priority seats to passengers in need and avoid disturbing others.</span></li>
+                    <li><span lang="zh-HK">請保持車門及通道暢通，並保持車廂清潔。</span><span lang="en">Keep doors and aisles clear, and keep the bus clean.</span></li>
+                    <li><span lang="zh-HK">本證為非官方創作，不代表乘車資格或身份證明；乘車時須出示有效證件。</span><span lang="en">This unofficial permit does not establish travel eligibility or identity. Valid identification is required.</span></li>
                 </ol>
                 <footer class="terms-footer">
-                    <span>FOR ENTERTAINMENT ONLY</span>
-                    <span>僅供娛樂用途</span>
+                    <span lang="en">FOR ENTERTAINMENT ONLY</span>
+                    <span lang="zh-HK">僅供娛樂用途</span>
                 </footer>
             </div>
         </div>
