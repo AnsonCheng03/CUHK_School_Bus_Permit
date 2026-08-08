@@ -26,6 +26,7 @@ const languageToggles = [...document.querySelectorAll('.language-toggle')];
 const platformDestinations = [...document.querySelectorAll('[data-platform]')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
+const appLoader = document.querySelector('.app-loader');
 const titleMeta = document.querySelector('meta[name="title"]');
 const descriptionMeta = document.querySelector('meta[name="description"]');
 const robotsMeta = document.querySelector('meta[name="robots"]');
@@ -38,6 +39,15 @@ const twitterDescriptionMeta = document.querySelector('meta[name="twitter:descri
 const contentLanguageMeta = document.querySelector('meta[http-equiv="Content-Language"]');
 const ogLocaleMeta = document.querySelector('meta[property="og:locale"]');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const startupImageSources = [
+    'getcard/images/schbus_d.png',
+    'getcard/images/schbus_l.png',
+    'getcard/images/CUHK.png',
+    'bus-app-icon-256.png',
+    'app-store-badge.svg',
+    'google-play-badge.png',
+    'website-qr.png'
+];
 
 const canonicalUrl = 'https://cu-bus.online/_permit/';
 const seoByLanguage = {
@@ -126,9 +136,103 @@ let isFullscreen = false;
 let isClosingFullscreen = false;
 let isDiscarding = false;
 let appInitialized = false;
+let draftSaveTimer;
+let validDateChanged = false;
+
+const permitFieldNames = ['Type', 'Name', 'SID', 'Major', 'Valid'];
+const databaseName = 'cu-bus-permit';
+const databaseStoreName = 'preferences';
+const formDraftKey = 'form-draft';
+const languagePreferenceKey = 'language';
+let permitDatabasePromise;
+
+function openPermitDatabase() {
+    if (permitDatabasePromise) return permitDatabasePromise;
+    permitDatabasePromise = new Promise((resolve) => {
+        if (!window.indexedDB) {
+            resolve(null);
+            return;
+        }
+
+        try {
+            const request = window.indexedDB.open(databaseName, 1);
+            request.onupgradeneeded = () => {
+                if (!request.result.objectStoreNames.contains(databaseStoreName)) {
+                    request.result.createObjectStore(databaseStoreName);
+                }
+            };
+            request.onsuccess = () => {
+                const database = request.result;
+                database.onversionchange = () => database.close();
+                resolve(database);
+            };
+            request.onerror = () => resolve(null);
+        } catch {
+            resolve(null);
+        }
+    });
+    return permitDatabasePromise;
+}
+
+async function readSavedValue(key) {
+    const database = await openPermitDatabase();
+    if (!database) return null;
+    return new Promise((resolve) => {
+        try {
+            const request = database.transaction(databaseStoreName, 'readonly').objectStore(databaseStoreName).get(key);
+            request.onsuccess = () => resolve(request.result ?? null);
+            request.onerror = () => resolve(null);
+        } catch {
+            resolve(null);
+        }
+    });
+}
+
+async function writeSavedValue(key, value) {
+    const database = await openPermitDatabase();
+    if (!database) return false;
+    return new Promise((resolve) => {
+        try {
+            const transaction = database.transaction(databaseStoreName, 'readwrite');
+            transaction.objectStore(databaseStoreName).put(value, key);
+            transaction.oncomplete = () => resolve(true);
+            transaction.onerror = () => resolve(false);
+            transaction.onabort = () => resolve(false);
+        } catch {
+            resolve(false);
+        }
+    });
+}
+
+function currentFormDraft() {
+    const data = new FormData(form);
+    return {
+        ...Object.fromEntries(permitFieldNames.map((name) => [name, String(data.get(name) || '')])),
+        validDateChanged
+    };
+}
+
+function savedDraftParams(draft) {
+    const params = new URLSearchParams();
+    if (!draft || typeof draft !== 'object') return params;
+    permitFieldNames.forEach((name) => {
+        if (name === 'Valid' && draft.validDateChanged !== true) return;
+        if (typeof draft[name] === 'string') params.set(name, draft[name]);
+    });
+    return params;
+}
+
+function saveFormDraft() {
+    return writeSavedValue(formDraftKey, currentFormDraft());
+}
+
+function scheduleFormDraftSave() {
+    window.clearTimeout(draftSaveTimer);
+    draftSaveTimer = window.setTimeout(() => void saveFormDraft(), 220);
+}
 
 function paramsSignature(params) {
-    return ['Type', 'Name', 'SID', 'Major', 'Valid'].map((key) => params.get(key) || '').join('|');
+    return permitFieldNames.map((key) => params.get(key) || '').join('|');
 }
 
 function buildUrl(viewName, params = permitParams) {
@@ -204,7 +308,7 @@ function setLanguage(language, persist = true) {
     updateSeo(activeView);
     setCardSide(cardObject.classList.contains('is-back'));
     if (persist) {
-        try { window.localStorage.setItem('permit-language', currentLanguage); } catch { /* Storage may be unavailable. */ }
+        void writeSavedValue(languagePreferenceKey, currentLanguage);
     }
 }
 
@@ -347,8 +451,7 @@ async function switchView(viewName, historyMode = 'push', skipViewTransition = f
 function setCardData(params) {
     const type = params.get('Type') === 'Lesson' ? 'Lesson' : 'Transit';
     const isTransit = type === 'Transit';
-    const today = new Date();
-    const defaultValid = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear() + 1}`;
+    const defaultValid = defaultPermitExpiry().display;
 
     document.querySelector('.cardname h1').textContent = isTransit ? '穿梭校巴證' : '轉堂校巴證';
     document.querySelector('.cardname h2').textContent = isTransit ? 'Shuttle Bus Permit' : 'Meet-Class Bus Permit';
@@ -389,6 +492,14 @@ function localIsoDate(date) {
     return `${year}-${month}-${day}`;
 }
 
+function defaultPermitExpiry(date = new Date()) {
+    const year = date.getFullYear() + 1;
+    return {
+        input: `${year}-07-31`,
+        display: `31/7/${year}`
+    };
+}
+
 function setProgress(value) {
     const rounded = Math.max(0, Math.min(100, Math.round(value)));
     generationProgressFill.style.transform = `scaleX(${rounded / 100})`;
@@ -401,6 +512,46 @@ function preloadImage(src) {
         image.onload = resolve;
         image.onerror = resolve;
         image.src = src;
+    });
+}
+
+function preloadStartupImages() {
+    return Promise.all([...new Set(startupImageSources)].map(preloadImage));
+}
+
+function minimumStartupTime() {
+    if (reducedMotion) return Promise.resolve();
+    return new Promise((resolve) => window.setTimeout(resolve, 850));
+}
+
+function dismissAppLoader() {
+    if (!appLoader) {
+        document.body.classList.remove('is-booting');
+        return Promise.resolve();
+    }
+    if (reducedMotion) {
+        appLoader.hidden = true;
+        document.body.classList.remove('is-booting');
+        return Promise.resolve();
+    }
+
+    appLoader.classList.add('is-leaving');
+    return new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(fallbackTimer);
+            appLoader.removeEventListener('animationend', onAnimationEnd);
+            appLoader.hidden = true;
+            document.body.classList.remove('is-booting');
+            resolve();
+        };
+        const onAnimationEnd = (event) => {
+            if (event.target === appLoader && event.animationName === 'app-loader-out') finish();
+        };
+        const fallbackTimer = window.setTimeout(finish, 700);
+        appLoader.addEventListener('animationend', onAnimationEnd);
     });
 }
 
@@ -486,7 +637,8 @@ function paintPermit(runId) {
             context.stroke();
             context.restore();
 
-            brushHead.style.setProperty('--brush-x', `${endX - 24}px`);
+            const brushX = Math.max(0, Math.min(512, endX - 24));
+            brushHead.style.setProperty('--brush-x', `${brushX}px`);
             brushHead.style.setProperty('--brush-y', `${y - 8}px`);
             setProgress(22 + progress * 62);
 
@@ -528,7 +680,7 @@ function markComplete(interactive = true, newFinish = true) {
 async function presentCompletedCard(runId) {
     if (runId !== generationRun) return false;
     if (!reducedMotion) {
-        await playExitAnimation(cardObject, 'is-presenting', 'new-card-spin', 1500);
+        await playExitAnimation(cardObject, 'is-presenting', 'new-card-spin', 2080);
         if (runId !== generationRun) return false;
         cardObject.classList.add('is-new', 'is-shining');
         await new Promise((resolve) => window.setTimeout(resolve, 920));
@@ -859,7 +1011,7 @@ async function renderPermitImage() {
         ['學生姓名  Name', permitParams.get('Name') || ''],
         ['學生編號  Student ID', permitParams.get('SID') || '1155125528'],
         ['主修科目  Major', permitParams.get('Major') || 'B.A. in Fine Arts'],
-        ['有效期至  Valid Until', formatPermitDate(permitParams.get('Valid')) || `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear() + 1}`]
+        ['有效期至  Valid Until', formatPermitDate(permitParams.get('Valid')) || defaultPermitExpiry(today).display]
     ];
     context.textAlign = 'left';
     values.forEach(([label, value], index) => {
@@ -906,10 +1058,21 @@ async function sharePermitImage() {
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     permitParams = new URLSearchParams(new FormData(form));
+    window.clearTimeout(draftSaveTimer);
+    void saveFormDraft();
     const buttonLabel = form.querySelector('.generate-button span');
     buttonLabel.textContent = t('generateEntering');
     await openCreating('push', true);
     buttonLabel.textContent = t('generate');
+});
+
+form.addEventListener('input', scheduleFormDraftSave);
+form.addEventListener('change', scheduleFormDraftSave);
+form.elements.Valid.addEventListener('input', () => { validDateChanged = true; });
+form.elements.Valid.addEventListener('change', () => { validDateChanged = true; });
+window.addEventListener('pagehide', () => {
+    window.clearTimeout(draftSaveTimer);
+    void saveFormDraft();
 });
 
 cardObject.addEventListener('click', flipCard);
@@ -948,6 +1111,7 @@ window.addEventListener('popstate', async () => {
     }
 
     permitParams = urlParams;
+    validDateChanged = permitParams.has('Valid');
     populateForm(permitParams);
     if (!permitParams.get('Name')) {
         await openForm('replace');
@@ -959,22 +1123,51 @@ window.addEventListener('popstate', async () => {
     }
 });
 
+function registerServiceWorker() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
+    window.addEventListener('load', async () => {
+        try {
+            const registration = await navigator.serviceWorker.register('./service-worker.js', {
+                scope: './',
+                updateViaCache: 'none'
+            });
+            void registration.update();
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') void registration.update();
+            });
+        } catch {
+            // The app remains usable online if service workers are unavailable.
+        }
+    }, { once: true });
+}
+
 async function initialize() {
     drawAmbient();
-    let savedLanguage = 'zh';
-    try { savedLanguage = window.localStorage.getItem('permit-language') || 'zh'; } catch { /* Storage may be unavailable. */ }
+    const [storedLanguage, storedDraft] = await Promise.all([
+        readSavedValue(languagePreferenceKey),
+        readSavedValue(formDraftKey),
+        preloadStartupImages(),
+        minimumStartupTime()
+    ]);
+    const savedLanguage = storedLanguage === 'en' ? 'en' : 'zh';
     setLanguage(savedLanguage, false);
     configureAppDestination();
     const validInput = form.elements.Valid;
     const today = new Date();
-    const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
     validInput.min = localIsoDate(today);
-    validInput.value = localIsoDate(nextYear);
+    validInput.value = defaultPermitExpiry(today).input;
     const urlParams = new URLSearchParams(window.location.search);
     const requestedView = urlParams.get('step');
     permitParams = urlParams;
 
-    if (permitParams.get('Name')) populateForm(permitParams);
+    const hasUrlPermitData = permitFieldNames.some((name) => permitParams.has(name));
+    if (hasUrlPermitData) {
+        validDateChanged = permitParams.has('Valid');
+        populateForm(permitParams);
+    } else {
+        validDateChanged = storedDraft?.validDateChanged === true;
+        populateForm(savedDraftParams(storedDraft));
+    }
     if (requestedView === 'preview' && permitParams.get('Name')) {
         generatedSignature = paramsSignature(permitParams);
         await openPreview('none');
@@ -984,6 +1177,8 @@ async function initialize() {
         await openForm('replace');
     }
     appInitialized = true;
+    await dismissAppLoader();
 }
 
+registerServiceWorker();
 initialize();

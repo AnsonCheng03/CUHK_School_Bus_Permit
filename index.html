@@ -64,7 +64,19 @@
     <link rel="preload" as="image" href="getcard/images/CUHK.png">
 </head>
 
-<body>
+<body class="is-booting">
+    <div class="app-loader" role="status" aria-live="polite" aria-label="正在載入 CU Bus">
+        <div class="app-loader-visual" aria-hidden="true">
+            <!-- <span class="app-loader-route"></span> -->
+            <span class="app-loader-icon-wrap">
+                <img src="bus-app-icon-256.png" alt="">
+            </span>
+        </div>
+        <strong>CU Bus</strong>
+        <span class="app-loader-progress" aria-hidden="true"><i></i></span>
+        <span class="app-loader-status-text">正在載入</span>
+    </div>
+
     <canvas class="ambient-canvas" aria-hidden="true"></canvas>
     <div class="ambient" aria-hidden="true">
         <span class="orb orb-one"></span>
