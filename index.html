@@ -59,13 +59,43 @@
             }
         }
     </script>
-    <link href="getcard/style.css?v=20260809130000" rel="stylesheet">
-    <link href="style.css?v=20260809130000" rel="stylesheet">
-    <link href="spa.css?v=20260809130000" rel="stylesheet">
-    <script src="script.js?v=20260809130000" defer></script>
-    <link rel="preload" as="image" href="getcard/images/schbus_d.png">
-    <link rel="preload" as="image" href="getcard/images/schbus_l.png">
-    <link rel="preload" as="image" href="getcard/images/CUHK.png">
+    <style>
+        :root { --gold: #f2c568; }
+        * { box-sizing: border-box; }
+        html, body { min-width: 320px; min-height: 100%; margin: 0; background: #15051f; }
+        body.is-booting { min-height: 100vh; min-height: 100dvh; overflow-x: hidden; overflow-y: scroll; scrollbar-gutter: stable; }
+        body.is-booting > :not(.app-loader) { display: none !important; }
+        .app-loader {
+            position: fixed; z-index: 2000; inset: 0; min-height: 100vh; min-height: 100dvh;
+            display: grid; place-content: center; justify-items: center; gap: 15px;
+            padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+            overflow: hidden; color: #fff;
+            background: radial-gradient(circle at 50% 42%, rgba(119,58,153,.32), transparent 19rem), linear-gradient(145deg, #15051f, #250936 55%, #13051e);
+        }
+        .app-loader::before, .app-loader::after {
+            content: ""; position: absolute; width: min(78vw, 520px); aspect-ratio: 1;
+            border: 1px solid rgba(242,197,104,.12); border-top-color: rgba(242,197,104,.38); border-radius: 50%;
+            animation: loader-orbit 8s linear infinite;
+        }
+        .app-loader::after { width: min(56vw, 340px); border-color: rgba(255,255,255,.07); border-right-color: rgba(255,255,255,.24); animation-duration: 5.5s; animation-direction: reverse; }
+        .app-loader-visual { position: relative; width: min(240px, 68vw); height: 92px; display: grid; place-items: center; }
+        .app-loader-icon-wrap { position: relative; z-index: 1; width: 66px; height: 66px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 20px; background: #fff; box-shadow: 0 16px 48px rgba(0,0,0,.32); animation: loader-bus 920ms cubic-bezier(.35,.1,.3,1) infinite alternate; }
+        .app-loader-icon-wrap img { width: 100%; height: 100%; display: block; }
+        .app-loader > strong { position: relative; z-index: 1; font: 800 13px/1 Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+        .app-loader-progress { position: relative; z-index: 1; width: min(150px, 46vw); height: 3px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.1); }
+        .app-loader-progress i { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, var(--gold), transparent); transform: translateX(-100%); animation: loader-progress 1s ease-in-out infinite; }
+        .app-loader-status-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        @keyframes loader-orbit { to { transform: rotate(360deg); } }
+        @keyframes loader-bus { from { transform: translate3d(-7px,2px,0) rotate(-1.5deg); } to { transform: translate3d(7px,-3px,0) rotate(1.5deg); } }
+        @keyframes loader-progress { 50%, 100% { transform: translateX(100%); } }
+        @media (prefers-reduced-motion: reduce) { .app-loader::before, .app-loader::after, .app-loader-icon-wrap, .app-loader-progress i { animation-duration: .01ms; animation-iteration-count: 1; } }
+    </style>
+    <script src="bootstrap.js?v=20260809141500" defer></script>
+    <noscript>
+        <link href="getcard/style.css?v=20260809141500" rel="stylesheet">
+        <link href="style.css?v=20260809141500" rel="stylesheet">
+        <link href="spa.css?v=20260809141500" rel="stylesheet">
+    </noscript>
 </head>
 
 <body class="is-booting" aria-busy="true">
@@ -277,7 +307,7 @@
         </div>
         <h2 id="update-dialog-title">正在檢查更新</h2>
         <p id="update-dialog-message" role="status" aria-live="polite">正在確認是否為最新版本。</p>
-        <div class="update-progress" role="progressbar" aria-label="更新進度" data-i18n-aria-label="updateProgressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden>
+        <div class="update-progress is-hidden" role="progressbar" aria-label="更新進度" data-i18n-aria-label="updateProgressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-hidden="true">
             <span class="update-progress-fill"></span>
         </div>
         <button class="update-dialog-close" type="button" data-i18n="closeUpdate">關閉</button>

@@ -1,9 +1,10 @@
 const CACHE_PREFIX = 'cu-bus-permit-';
-const RELEASE_VERSION = '20260809130000';
+const RELEASE_VERSION = '20260809141500';
 const CACHE_NAME = `${CACHE_PREFIX}${RELEASE_VERSION}`;
 const APP_SHELL = [
     './',
     './index.html',
+    `./bootstrap.js?v=${RELEASE_VERSION}`,
     `./style.css?v=${RELEASE_VERSION}`,
     `./spa.css?v=${RELEASE_VERSION}`,
     `./script.js?v=${RELEASE_VERSION}`,

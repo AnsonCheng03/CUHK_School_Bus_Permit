@@ -1303,8 +1303,10 @@ function showUpdateDialog(titleKey, messageKey, { showProgress = false, closable
     updateDialog.classList.remove('is-closing');
     updateDialogTitle.textContent = t(titleKey);
     updateDialogMessage.textContent = t(messageKey);
-    updateProgress.hidden = !showProgress;
-    updateDialogClose.hidden = !closable;
+    updateProgress.classList.toggle('is-hidden', !showProgress);
+    updateProgress.setAttribute('aria-hidden', String(!showProgress));
+    updateDialogClose.classList.toggle('is-placeholder', !closable);
+    updateDialogClose.disabled = !closable;
     if (!updateDialog.open) updateDialog.showModal();
     if (closable) updateDialogClose.focus({ preventScroll: true });
     else updateDialog.focus({ preventScroll: true });
@@ -1332,7 +1334,7 @@ async function fetchLatestAssetVersion() {
     if (!response.ok) throw new Error(`Update check failed with ${response.status}`);
     const documentMarkup = await response.text();
     const latestDocument = new DOMParser().parseFromString(documentMarkup, 'text/html');
-    const latestScript = latestDocument.querySelector('script[src*="script.js"]');
+    const latestScript = latestDocument.querySelector('script[src*="bootstrap.js"]');
     if (!latestScript) throw new Error('Latest version marker is missing');
     const latestScriptUrl = new URL(latestScript.getAttribute('src'), indexUrl);
     const latestVersion = latestScriptUrl.searchParams.get('v');

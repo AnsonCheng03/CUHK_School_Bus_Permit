@@ -16,13 +16,28 @@ const printStart = styles.indexOf('@media print');
 const printStyles = printStart >= 0 ? styles.slice(printStart) : '';
 
 test('JavaScript files parse successfully', () => {
-    for (const file of ['script.js', 'service-worker.js']) {
+    for (const file of ['bootstrap.js', 'script.js', 'service-worker.js']) {
         const result = spawnSync(process.execPath, ['--check', file], {
             cwd: projectRoot,
             encoding: 'utf8'
         });
         assert.equal(result.status, 0, result.stderr || `${file} failed syntax validation`);
     }
+});
+
+test('critical loader paints before the application chunk', () => {
+    const bootstrap = read('bootstrap.js');
+    assert.match(html, /body\.is-booting > :not\(\.app-loader\) \{ display: none !important; \}/);
+    assert.match(html, /body\.is-booting \{[^}]*overflow-y: scroll;[^}]*scrollbar-gutter: stable;/);
+    assert.match(styles, /body\.is-booting \{[\s\S]*overflow-y: scroll;[\s\S]*scrollbar-gutter: stable;/);
+    assert.match(html, /<script src="bootstrap\.js\?v=\d+" defer><\/script>/);
+    assert.doesNotMatch(html, /<link rel="preload" as="image" href="getcard\/images\//);
+    assert.doesNotMatch(html, /<script src="script\.js\?/);
+    assert.match(bootstrap, /requestAnimationFrame\(\(\) => requestAnimationFrame/);
+    assert.match(bootstrap, /await Promise\.all\(styles\.map\(loadStyle\)\)/);
+    assert.match(bootstrap, /script\.src = `script\.js\?v=/);
+    assert.match(script, /querySelector\('script\[src\*="bootstrap\.js"\]'\)/);
+    assert.match(worker, /bootstrap\.js\?v=\$\{RELEASE_VERSION\}/);
 });
 
 test('all three SPA steps and required actions remain present', () => {
@@ -59,7 +74,7 @@ test('mobile app banner avoids Safari compositing shadows', () => {
 test('online status and manual update flow remain accessible', () => {
     assert.match(html, /class="network-update-button"[^>]*data-state="online"/);
     assert.match(html, /class="update-dialog"[^>]*aria-labelledby="update-dialog-title"[^>]*aria-describedby="update-dialog-message"/);
-    assert.match(html, /class="update-progress" role="progressbar"[^>]*aria-valuenow="0"/);
+    assert.match(html, /class="update-progress[^"]*" role="progressbar"[^>]*aria-valuenow="0"/);
     assert.match(script, /window\.addEventListener\('online', updateNetworkStatus\)/);
     assert.match(script, /window\.addEventListener\('offline', updateNetworkStatus\)/);
     assert.match(script, /fetch\(indexUrl, \{ cache: 'no-store' \}\)/);
@@ -70,8 +85,10 @@ test('online status and manual update flow remain accessible', () => {
     assert.match(worker, /broadcastProgress\(completed, APP_SHELL\.length\)/);
     assert.match(styles, /\.update-dialog\[open\][\s\S]*animation: update-dialog-in/);
     assert.match(styles, /\.update-dialog\.is-closing::backdrop[\s\S]*animation: update-backdrop-out/);
-    assert.match(styles, /\.update-progress\[hidden\][\s\S]*visibility: hidden/);
-    assert.match(styles, /\.update-dialog-close\[hidden\][\s\S]*visibility: hidden/);
+    assert.match(styles, /\.update-progress\.is-hidden[\s\S]*visibility: hidden/);
+    assert.match(styles, /\.update-dialog-close\.is-placeholder[\s\S]*visibility: hidden/);
+    assert.match(script, /updateProgress\.classList\.toggle\('is-hidden', !showProgress\)/);
+    assert.match(script, /updateDialogClose\.classList\.toggle\('is-placeholder', !closable\)/);
     assert.match(script, /updateDialog\.classList\.add\('is-closing'\)/);
     assert.match(script, /event\.preventDefault\(\);[\s\S]*closeUpdateDialog\(\)/);
     assert.match(script, /siteHeader\.hidden = viewName !== 'form'/);

@@ -343,8 +343,7 @@ svg {
     transition: width 180ms ease;
 }
 
-.update-progress[hidden] {
-    display: block;
+.update-progress.is-hidden {
     visibility: hidden;
     opacity: 0;
 }
@@ -363,7 +362,7 @@ svg {
 }
 
 .update-dialog-close:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
-.update-dialog-close[hidden] { display: inline-block; visibility: hidden; pointer-events: none; }
+.update-dialog-close.is-placeholder { visibility: hidden; pointer-events: none; }
 
 .step-pill,
 .unofficial-badge {
