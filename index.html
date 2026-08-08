@@ -2,18 +2,59 @@
 <html lang="zh-HK">
 
 <head>
-    <title>製作校巴證 | 中大校巴資訊站 CU BUS INFOPAGE</title>
+    <title>校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE</title>
     <meta charset="utf-8">
-    <meta name="title" content="製作校巴證 | 中大校巴資訊站 CU BUS INFOPAGE">
+    <meta name="title" content="校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE">
     <meta http-equiv="Content-Language" content="zh-HK">
-    <meta name="description" content="輸入簡單資料，製作一張屬於你的電子版中大校巴證。">
-    <meta name="keywords" content="校巴證, School Bus Permit, CUHK, 中大, 香港中文大學, BUS, CUBUS, 校巴">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="author" content="Anson Cheng">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#180627">
+    <meta name="application-name" content="中大校巴證製作器">
+    <link rel="canonical" href="https://cu-bus.online/_permit/">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="icon" type="image/png" href="bus-app-icon-256.png">
     <link rel="apple-touch-icon" href="bus-app-icon-256.png">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_HK">
+    <meta property="og:site_name" content="中大校巴資訊站 CU Bus Infopage">
+    <meta property="og:title" content="校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE">
+    <meta property="og:description" content="搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！">
+    <meta property="og:url" content="https://cu-bus.online/_permit/">
+    <meta property="og:image" content="https://cu-bus.online/_permit/og-bus-permit.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="中大校巴證製作器連結預覽">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE">
+    <meta name="twitter:description" content="搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！">
+    <meta name="twitter:image" content="https://cu-bus.online/_permit/og-bus-permit.png">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE",
+            "alternateName": "CUHK School Bus Permit Generator",
+            "url": "https://cu-bus.online/_permit/",
+            "description": "搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！此工具並非由香港中文大學官方提供。",
+            "applicationCategory": "EntertainmentApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires JavaScript and a modern web browser",
+            "inLanguage": ["zh-HK", "en"],
+            "isAccessibleForFree": true,
+            "image": "https://cu-bus.online/_permit/og-bus-permit.png",
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "HKD"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Anson Cheng"
+            }
+        }
+    </script>
     <link href="getcard/style.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <link href="spa.css" rel="stylesheet">
@@ -36,7 +77,7 @@
 
     <div class="page-shell">
         <header class="site-header">
-            <a class="brand brand-home" href="./" aria-label="返回校巴證製作首頁">
+            <a class="brand brand-home" href="./" aria-label="返回校巴證製作首頁" data-i18n-aria-label="homeLabel">
                 <span class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M5.5 16.5h13V8.2c0-2-1.5-3.7-3.5-3.9L8.3 3.6a2.6 2.6 0 0 0-2.8 2.6v10.3Z" />
@@ -44,8 +85,8 @@
                     </svg>
                 </span>
                 <span class="brand-copy">
-                    <strong>中大校巴資訊站</strong>
-                    <span>CU Bus Infopage</span>
+                    <strong data-i18n="brandName">中大校巴資訊站</strong>
+                    <span data-i18n="brandSub">校巴證製作</span>
                 </span>
             </a>
 
@@ -53,9 +94,10 @@
                 <span class="step-pill"><b class="current-step">01</b> / 03</span>
                 <button class="edit-link" type="button" hidden>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
-                    重新製作
+                    <span data-i18n="rebuild">重新製作</span>
                 </button>
-                <span class="unofficial-badge">非官方工具</span>
+                <span class="unofficial-badge" data-i18n="unofficial">非官方工具</span>
+                <button class="language-toggle header-language-toggle" type="button" aria-label="Switch to English">EN</button>
             </div>
         </header>
 
@@ -64,24 +106,24 @@
                 <main class="builder-layout form-only">
                     <section class="form-panel" aria-labelledby="page-title">
                         <div class="form-heading">
-                            <h1 id="page-title">校巴證資料</h1>
+                            <h1 id="page-title" data-i18n="formTitle">校巴證資料</h1>
                         </div>
 
                         <form class="permit-form">
                             <fieldset class="permit-type">
-                                <legend>想乘搭哪種校巴？</legend>
+                                <legend data-i18n="busTypeLegend">想乘搭哪種校巴？</legend>
                                 <div class="type-options">
                                     <input id="student" name="Type" type="radio" value="Transit" checked>
                                     <label for="student">
                                         <span class="type-icon" aria-hidden="true">01</span>
-                                        <span><strong>穿梭校巴</strong><small>Shuttle Bus</small></span>
+                                        <span><strong data-i18n="transitTitle">穿梭校巴</strong><small data-i18n="transitSub">校園穿梭路線</small></span>
                                         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 10 2.5 2.5L14 7" /></svg>
                                     </label>
 
                                     <input id="admin" name="Type" type="radio" value="Lesson">
                                     <label for="admin">
                                         <span class="type-icon" aria-hidden="true">02</span>
-                                        <span><strong>轉堂校巴</strong><small>Meet-Class Bus</small></span>
+                                        <span><strong data-i18n="lessonTitle">轉堂校巴</strong><small data-i18n="lessonSub">課堂接駁路線</small></span>
                                         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 10 2.5 2.5L14 7" /></svg>
                                     </label>
                                 </div>
@@ -89,19 +131,19 @@
 
                             <div class="form-fields">
                                 <label class="field field-wide">
-                                    <span>姓名 <em>必填</em></span>
-                                    <input placeholder="例如：CHAN Siu-ming（陳小明）" name="Name" type="text" maxlength="30" autocomplete="name" required>
+                                    <span><span data-i18n="nameLabel">姓名</span> <em data-i18n="required">必填</em></span>
+                                    <input placeholder="例如：CHAN Siu-ming（陳小明）" data-i18n-placeholder="namePlaceholder" name="Name" type="text" maxlength="30" autocomplete="name" required>
                                 </label>
                                 <label class="field">
-                                    <span>學生編號 <small>SID</small></span>
-                                    <input placeholder="例如：1155125528" name="SID" type="number" min="1000000000" max="1500000000" inputmode="numeric">
+                                    <span><span data-i18n="sidLabel">學生編號</span> <small>SID</small></span>
+                                    <input placeholder="例如：1155125528" data-i18n-placeholder="sidPlaceholder" name="SID" type="number" min="1000000000" max="1500000000" inputmode="numeric">
                                 </label>
                                 <label class="field">
-                                    <span>主修科目 <small>Major</small></span>
-                                    <input placeholder="例如：Fine Arts" name="Major" type="text" maxlength="50">
+                                    <span><span data-i18n="majorLabel">主修科目</span> <small>Major</small></span>
+                                    <input placeholder="例如：Fine Arts" data-i18n-placeholder="majorPlaceholder" name="Major" type="text" maxlength="50">
                                 </label>
                                 <label class="field field-wide">
-                                    <span>有效期 <small>Valid until</small></span>
+                                    <span><span data-i18n="validLabel">有效期</span> <small data-i18n="validSub">Valid until</small></span>
                                     <input name="Valid" type="date">
                                 </label>
                             </div>
@@ -109,10 +151,10 @@
                             <div class="form-footer">
                                 <p class="privacy-note">
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 8V6.5a3.5 3.5 0 0 1 7 0V8M5 8h10v8H5V8Z" /></svg>
-                                    只輸入你願意顯示於校巴證上的資料
+                                    <span data-i18n="privacy">只輸入你願意顯示於校巴證上的資料</span>
                                 </p>
                                 <button class="generate-button" type="submit">
-                                    <span>開始繪製</span>
+                                    <span data-i18n="generate">開始繪製</span>
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" /></svg>
                                 </button>
                             </div>
@@ -121,23 +163,23 @@
                 </main>
             </section>
 
-            <section class="spa-view creation-view" data-view="creating" aria-label="正在繪製校巴證" hidden>
+            <section class="spa-view creation-view" data-view="creating" aria-label="正在繪製校巴證" data-i18n-aria-label="creatingLabel" hidden>
                 <main class="creation-layout">
-                    <section class="permit-theatre" aria-label="校巴證繪製舞台">
+                    <section class="permit-theatre" aria-label="校巴證繪製舞台" data-i18n-aria-label="theatreLabel">
                         <div class="creation-card-mount card-mount"></div>
-                        <div class="generation-progress" role="progressbar" aria-label="校巴證製作進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="generation-progress" role="progressbar" aria-label="校巴證製作進度" data-i18n-aria-label="progressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                             <span class="generation-progress-fill"></span>
                         </div>
                     </section>
                 </main>
             </section>
 
-            <section class="spa-view preview-view" data-view="preview" aria-label="校巴證及操作" hidden>
+            <section class="spa-view preview-view" data-view="preview" aria-label="校巴證及操作" data-i18n-aria-label="previewLabel" hidden>
                 <main class="preview-panel-spa">
                     <div class="preview-canvas-spa">
                         <div class="preview-card-mount card-mount"></div>
                     </div>
-                    <aside class="app-promo" aria-label="下載 CU Bus 應用程式">
+                    <aside class="app-promo" aria-label="下載 CU Bus 應用程式" data-i18n-aria-label="appLabel">
                         <img class="app-promo-icon" src="bus-app-icon-256.png" alt="">
                         <div class="app-promo-copy">
                             <strong>CU Bus App</strong>
@@ -147,42 +189,42 @@
                             <a href="https://play.google.com/store/apps/details?id=com.cubus.app" target="_blank" rel="noopener">Android Google Play</a>
                         </div>
                     </aside>
-                    <aside class="print-website-qr" aria-label="CU Bus 網站 QR code">
+                    <aside class="print-website-qr" aria-label="CU Bus 網站 QR code" data-i18n-aria-label="qrLabel">
                         <a href="https://cu-bus.online/">
-                            <img src="website-qr.png" alt="前往 cu-bus.online 的 QR code">
-                            <span><strong>cu-bus.online</strong><small>掃描瀏覽網站</small></span>
+                            <img src="website-qr.png" alt="前往 cu-bus.online 的 QR code" data-i18n-alt="qrAlt">
+                            <span><strong>cu-bus.online</strong><small data-i18n="scanWebsite">掃描瀏覽網站</small></span>
                         </a>
                     </aside>
                 </main>
 
-                <section class="preview-actions" aria-label="校巴證操作">
+                <section class="preview-actions" aria-label="校巴證操作" data-i18n-aria-label="actionsLabel">
                         <button class="action-button fullscreen-button" type="button">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" /></svg>
-                            <span>預覽</span>
+                            <span data-i18n="previewButton">預覽</span>
                         </button>
                         <button class="action-button edit-permit-button" type="button">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
-                            <span>編輯</span>
+                            <span data-i18n="editButton">編輯</span>
                         </button>
                         <button class="action-button share-image-button" type="button">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="14.5" cy="4.5" r="2.2" /><circle cx="5" cy="10" r="2.2" /><circle cx="14.5" cy="15.5" r="2.2" /><path d="m7 8.9 5.4-3.2M7 11.1l5.4 3.2" /></svg>
-                            <span class="button-label">分享圖片</span>
+                            <span class="button-label" data-i18n="shareButton">分享圖片</span>
                         </button>
                         <button class="action-button printbtn" type="button">
                             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 7V3h8v4M6 14H4V8h12v6h-2M6 11h8v6H6v-6Z" /><path d="M13.5 9.5h.01" /></svg>
-                            <span>列印</span>
+                            <span data-i18n="printButton">列印</span>
                         </button>
                 </section>
             </section>
         </div>
 
         <footer class="site-footer">
-            <span>Made for the CUHK community</span>
-            <span>此工具並非由香港中文大學官方提供</span>
+            <span data-i18n="footerCommunity">為中大社群而製作</span>
+            <span data-i18n="footerUnofficial">此工具並非由香港中文大學官方提供</span>
         </footer>
     </div>
 
-    <div class="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" tabindex="-1" hidden>
+    <div class="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" data-i18n-aria-label="fullscreenLabel" tabindex="-1" hidden>
         <div class="fullscreen-card-mount card-mount"></div>
     </div>
 
@@ -239,16 +281,13 @@
                     </div>
                     <span class="terms-status">非官方 · Unofficial</span>
                 </header>
-                <div class="terms-grid">
-                    <section class="terms-column terms-en" lang="en">
-                        <span class="terms-label">EN</span>
-                        <p>The bus pass provided on this website is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments. According to current regulations, students are required to present a student ID or other valid identification (excluding the bus pass) when boarding the university shuttle buses. This bus pass holds no official function and should not be used for identification or any other purposes. For any inquiries, please contact the official representatives of The Chinese University of Hong Kong.</p>
-                    </section>
-                    <section class="terms-column terms-zh" lang="zh-HK">
-                        <span class="terms-label">中</span>
-                        <p>本網站所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。根據現行規定，乘搭校巴需出示學生證或其他有效證件（校巴證不在此列）。本校巴證不具任何實際功能，亦不可作為身份識別或其他用途。如有疑問，請聯絡香港中文大學官方機構查詢。</p>
-                    </section>
-                </div>
+                <ol class="terms-list">
+                    <li><span lang="zh-HK">下車前請按鐘一次；如未能按鐘，請清楚向司機講「前面有落」。</span><span lang="en">Press the bell once before alighting. If you cannot reach it, clearly notify the driver.</span></li>
+                    <li><span lang="zh-HK">落車時記得同司機講聲「唔該」；一句多謝，令大家嘅旅程更舒服。</span><span lang="en">Thank the driver when you leave; a little appreciation makes every journey better.</span></li>
+                    <li><span lang="zh-HK">乘車時請坐穩扶好，並主動讓座予有需要人士。</span><span lang="en">Remain seated or hold the handrail, and offer your seat to passengers in need.</span></li>
+                    <li><span lang="zh-HK">請勿阻塞車門或通道，並保持車廂整潔。</span><span lang="en">Keep doors and aisles clear, and help keep the bus clean.</span></li>
+                    <li><span lang="zh-HK">此證僅供創作及娛樂用途，並非中大官方證件；乘車時請出示學生證或其他有效證件。</span><span lang="en">This creative permit is for entertainment only. It is not an official CUHK document; present valid identification when boarding.</span></li>
+                </ol>
                 <footer class="terms-footer">
                     <span>FOR ENTERTAINMENT ONLY</span>
                     <span>僅供娛樂用途</span>

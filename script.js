@@ -22,16 +22,108 @@ const fullscreenButton = document.querySelector('.fullscreen-button');
 const editPermitButton = document.querySelector('.edit-permit-button');
 const shareImageButton = document.querySelector('.share-image-button');
 const shareButtonLabel = shareImageButton.querySelector('.button-label');
+const languageToggles = [...document.querySelectorAll('.language-toggle')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
+const titleMeta = document.querySelector('meta[name="title"]');
+const descriptionMeta = document.querySelector('meta[name="description"]');
+const robotsMeta = document.querySelector('meta[name="robots"]');
+const canonicalLink = document.querySelector('link[rel="canonical"]');
+const ogTitleMeta = document.querySelector('meta[property="og:title"]');
+const ogDescriptionMeta = document.querySelector('meta[property="og:description"]');
+const ogUrlMeta = document.querySelector('meta[property="og:url"]');
+const twitterTitleMeta = document.querySelector('meta[name="twitter:title"]');
+const twitterDescriptionMeta = document.querySelector('meta[name="twitter:description"]');
+const contentLanguageMeta = document.querySelector('meta[http-equiv="Content-Language"]');
+const ogLocaleMeta = document.querySelector('meta[property="og:locale"]');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const canonicalUrl = 'https://cu-bus.online/_permit/';
+const seoByLanguage = {
+    zh: {
+        form: {
+            title: '校巴證製作 | 中大校巴資訊站 CU BUS INFOPAGE',
+            description: '搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！',
+            socialDescription: '搭校巴一定唔可以唔提校巴證～ 你可以喺度整一張屬於你嘅電子版校巴證！',
+            robots: 'index, follow, max-image-preview:large'
+        },
+        creating: {
+            title: '正在繪製校巴證 | 中大校巴資訊站',
+            description: '正在為你繪製專屬中大校巴證。',
+            socialDescription: '使用中大校巴證製作器建立個人化校巴證圖片。',
+            robots: 'noindex, nofollow, noarchive'
+        },
+        preview: {
+            title: '校巴證預覽 | 中大校巴資訊站',
+            description: '預覽、分享或列印你的個人化中大校巴證。',
+            socialDescription: '使用中大校巴證製作器建立個人化校巴證圖片。',
+            robots: 'noindex, nofollow, noarchive'
+        }
+    },
+    en: {
+        form: {
+            title: 'School Bus Permit Generator | CU Bus Infopage',
+            description: 'Create your own digital CUHK school bus permit image to preview, share or print. This is an unofficial creative tool.',
+            socialDescription: 'Create your own digital CUHK school bus permit image.',
+            robots: 'index, follow, max-image-preview:large'
+        },
+        creating: {
+            title: 'Creating Your Bus Permit | CU Bus Infopage',
+            description: 'Your personalised school bus permit is being created.',
+            socialDescription: 'Create your own digital CUHK school bus permit image.',
+            robots: 'noindex, nofollow, noarchive'
+        },
+        preview: {
+            title: 'Bus Permit Preview | CU Bus Infopage',
+            description: 'Preview, share or print your personalised school bus permit.',
+            socialDescription: 'Create your own digital CUHK school bus permit image.',
+            robots: 'noindex, nofollow, noarchive'
+        }
+    }
+};
+
+const translations = {
+    zh: {
+        homeLabel: '返回校巴證製作首頁', brandName: '中大校巴資訊站', brandSub: '校巴證製作',
+        rebuild: '重新製作', unofficial: '非官方工具', formTitle: '校巴證資料', busTypeLegend: '想乘搭哪種校巴？',
+        transitTitle: '穿梭校巴', transitSub: '校園穿梭路線', lessonTitle: '轉堂校巴', lessonSub: '課堂接駁路線',
+        nameLabel: '姓名', required: '必填', namePlaceholder: '例如：CHAN Siu-ming（陳小明）',
+        sidLabel: '學生編號', sidPlaceholder: '例如：1155125528', majorLabel: '主修科目', majorPlaceholder: '例如：Fine Arts',
+        validLabel: '有效期', validSub: '截止日期', privacy: '只輸入你願意顯示於校巴證上的資料', generate: '開始繪製',
+        generateEntering: '進入繪製室…', creatingLabel: '正在繪製校巴證', theatreLabel: '校巴證繪製舞台', progressLabel: '校巴證製作進度',
+        previewLabel: '校巴證及操作', appLabel: '下載 CU Bus 應用程式', qrLabel: 'CU Bus 網站 QR code',
+        qrAlt: '前往 cu-bus.online 的 QR code', scanWebsite: '掃描瀏覽網站', actionsLabel: '校巴證操作',
+        previewButton: '預覽', editButton: '編輯', shareButton: '分享圖片', printButton: '列印',
+        footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽',
+        showBack: '查看校巴證條款', showFront: '翻回校巴證正面', shareWorking: '製作中…', shareSaved: '已儲存', shareFailed: '未能分享', shareTitle: '中大校巴證'
+    },
+    en: {
+        homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
+        rebuild: 'Start again', unofficial: 'Unofficial tool', formTitle: 'Permit details', busTypeLegend: 'Which bus would you like to take?',
+        transitTitle: 'Shuttle Bus', transitSub: 'Campus shuttle routes', lessonTitle: 'Meet-Class Bus', lessonSub: 'Between-class routes',
+        nameLabel: 'Name', required: 'Required', namePlaceholder: 'e.g. CHAN Siu-ming',
+        sidLabel: 'Student ID', sidPlaceholder: 'e.g. 1155125528', majorLabel: 'Major', majorPlaceholder: 'e.g. Fine Arts',
+        validLabel: 'Valid until', validSub: 'Expiry date', privacy: 'Only enter information you want shown on the permit', generate: 'Create permit',
+        generateEntering: 'Opening studio…', creatingLabel: 'Creating school bus permit', theatreLabel: 'Permit creation stage', progressLabel: 'Permit creation progress',
+        previewLabel: 'Permit and actions', appLabel: 'Download the CU Bus app', qrLabel: 'CU Bus website QR code',
+        qrAlt: 'QR code for cu-bus.online', scanWebsite: 'Scan to visit', actionsLabel: 'Permit actions',
+        previewButton: 'Preview', editButton: 'Edit', shareButton: 'Share image', printButton: 'Print',
+        footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview',
+        showBack: 'View permit terms', showFront: 'Return to the permit front', shareWorking: 'Creating…', shareSaved: 'Saved', shareFailed: 'Unable to share', shareTitle: 'CUHK School Bus Permit'
+    }
+};
+
 let permitParams = new URLSearchParams();
+let currentLanguage = 'zh';
 let activeView = 'form';
 let generationRun = 0;
 let generatedSignature = '';
 let flipTimer;
+let cardMoveTimer;
+let cardMoveRun = 0;
 let isFullscreen = false;
+let isClosingFullscreen = false;
+let isDiscarding = false;
 let appInitialized = false;
 
 function paramsSignature(params) {
@@ -67,9 +159,58 @@ function updateHeader(viewName) {
     document.body.dataset.view = viewName;
 }
 
-function commitView(viewName) {
+function updateSeo(viewName) {
+    const languageSeo = seoByLanguage[currentLanguage] || seoByLanguage.zh;
+    const seo = languageSeo[viewName] || languageSeo.form;
+    document.title = seo.title;
+    titleMeta?.setAttribute('content', seo.title);
+    descriptionMeta?.setAttribute('content', seo.description);
+    robotsMeta?.setAttribute('content', seo.robots);
+    canonicalLink?.setAttribute('href', canonicalUrl);
+    ogTitleMeta?.setAttribute('content', seo.title);
+    ogDescriptionMeta?.setAttribute('content', seo.socialDescription);
+    ogUrlMeta?.setAttribute('content', canonicalUrl);
+    twitterTitleMeta?.setAttribute('content', seo.title);
+    twitterDescriptionMeta?.setAttribute('content', seo.socialDescription);
+    contentLanguageMeta?.setAttribute('content', currentLanguage === 'en' ? 'en' : 'zh-HK');
+    ogLocaleMeta?.setAttribute('content', currentLanguage === 'en' ? 'en_GB' : 'zh_HK');
+}
+
+function t(key) {
+    return translations[currentLanguage]?.[key] || translations.zh[key] || key;
+}
+
+function setLanguage(language, persist = true) {
+    currentLanguage = language === 'en' ? 'en' : 'zh';
+    document.documentElement.lang = currentLanguage === 'en' ? 'en' : 'zh-HK';
+    document.querySelectorAll('[data-i18n]').forEach((element) => {
+        element.textContent = t(element.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((element) => {
+        element.setAttribute('placeholder', t(element.dataset.i18nPlaceholder));
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach((element) => {
+        element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
+    });
+    document.querySelectorAll('[data-i18n-alt]').forEach((element) => {
+        element.setAttribute('alt', t(element.dataset.i18nAlt));
+    });
+    languageToggles.forEach((button) => {
+        button.textContent = currentLanguage === 'zh' ? 'EN' : '中';
+        button.setAttribute('aria-label', currentLanguage === 'zh' ? 'Switch to English' : '切換至中文');
+        button.setAttribute('lang', currentLanguage === 'zh' ? 'en' : 'zh-HK');
+    });
+    updateSeo(activeView);
+    setCardSide(cardObject.classList.contains('is-back'));
+    if (persist) {
+        try { window.localStorage.setItem('permit-language', currentLanguage); } catch { /* Storage may be unavailable. */ }
+    }
+}
+
+function commitView(viewName, skipFallbackEntry = false, forceEntry = false) {
     if (viewName !== 'preview' && isFullscreen) {
         isFullscreen = false;
+        isClosingFullscreen = false;
         fullscreenPreview.hidden = true;
         document.body.classList.remove('fullscreen-open');
         cardObject.setAttribute('tabindex', '0');
@@ -79,8 +220,8 @@ function commitView(viewName) {
         const active = name === viewName;
         view.hidden = !active;
         view.classList.toggle('is-active', active);
-        view.classList.remove('is-entering');
-        if (active && !document.startViewTransition && !reducedMotion) {
+        view.classList.remove('is-entering', 'is-leaving');
+        if (active && !reducedMotion && !skipFallbackEntry && (!document.startViewTransition || forceEntry)) {
             view.classList.add('is-entering');
             window.setTimeout(() => view.classList.remove('is-entering'), 650);
         }
@@ -88,27 +229,95 @@ function commitView(viewName) {
 
     activeView = viewName;
     updateHeader(viewName);
-    document.title = viewName === 'form'
-        ? '製作校巴證 | 中大校巴資訊站 CU BUS INFOPAGE'
-        : viewName === 'creating'
-            ? '正在繪製校巴證 | 中大校巴資訊站'
-            : '校巴證預覽 | 中大校巴資訊站';
+    updateSeo(viewName);
 
     if (viewName === 'creating') creationMount.append(cardScaler);
     if (viewName === 'preview') previewMount.append(cardScaler);
     cardScaler.setAttribute('aria-hidden', viewName === 'form' ? 'true' : 'false');
-    requestAnimationFrame(resizeCard);
+    resizeCard();
 }
 
-async function switchView(viewName, historyMode = 'push') {
+function playExitAnimation(element, className, animationName, fallbackDuration) {
+    if (!element || reducedMotion) return Promise.resolve();
+    element.classList.add(className);
+    return new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(fallbackTimer);
+            element.removeEventListener('animationend', onAnimationEnd);
+            element.classList.remove(className);
+            resolve();
+        };
+        const onAnimationEnd = (event) => {
+            if (event.target === element && event.animationName === animationName) finish();
+        };
+        const fallbackTimer = window.setTimeout(finish, fallbackDuration);
+        element.addEventListener('animationend', onAnimationEnd);
+    });
+}
+
+function animateCardMove(fromRect) {
+    if (!fromRect || reducedMotion) return;
+    const toRect = cardScaler.getBoundingClientRect();
+    if (!fromRect.width || !toRect.width) return;
+
+    const deltaX = fromRect.left + fromRect.width / 2 - (toRect.left + toRect.width / 2);
+    const deltaY = fromRect.top + fromRect.height / 2 - (toRect.top + toRect.height / 2);
+    const targetScale = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1;
+    const startScale = targetScale * (fromRect.width / toRect.width);
+    const runId = ++cardMoveRun;
+
+    window.clearTimeout(cardMoveTimer);
+    cardScaler.classList.remove('is-relocating');
+    cardScaler.style.setProperty('--card-move-x', `${deltaX}px`);
+    cardScaler.style.setProperty('--card-move-y', `${deltaY}px`);
+    cardScaler.style.setProperty('--card-move-scale', String(startScale));
+    cardScaler.getBoundingClientRect();
+    cardScaler.classList.add('is-relocating');
+
+    requestAnimationFrame(() => {
+        if (runId !== cardMoveRun) return;
+        cardScaler.style.setProperty('--card-move-x', '0px');
+        cardScaler.style.setProperty('--card-move-y', '0px');
+        cardScaler.style.setProperty('--card-move-scale', String(targetScale));
+    });
+
+    cardMoveTimer = window.setTimeout(() => {
+        if (runId !== cardMoveRun) return;
+        cardScaler.classList.remove('is-relocating');
+        cardScaler.style.removeProperty('--card-move-x');
+        cardScaler.style.removeProperty('--card-move-y');
+        cardScaler.style.removeProperty('--card-move-scale');
+    }, 760);
+}
+
+async function switchView(viewName, historyMode = 'push', skipViewTransition = false) {
     updateHistory(viewName, historyMode);
     generationRun += viewName === 'form' ? 1 : 0;
+    const animateCard = activeView === 'creating' && viewName === 'preview' && !reducedMotion;
+    const cardStartRect = animateCard ? cardScaler.getBoundingClientRect() : null;
 
-    if (appInitialized && document.startViewTransition && !reducedMotion) {
+    const useNativeTransition = !skipViewTransition && appInitialized && document.startViewTransition && !reducedMotion;
+    if (useNativeTransition) {
         const transition = document.startViewTransition(() => commitView(viewName));
         await transition.finished;
     } else {
-        commitView(viewName);
+        if (appInitialized && !reducedMotion && !skipViewTransition) {
+            if (animateCard) {
+                await playExitAnimation(generationProgress, 'is-leaving', 'progress-leave', 330);
+            } else {
+                await playExitAnimation(views.get(activeView), 'is-leaving', 'view-leave', 390);
+            }
+        }
+        commitView(viewName, animateCard, skipViewTransition && appInitialized);
+        if (animateCard) {
+            animateCardMove(cardStartRect);
+            const previewView = views.get('preview');
+            previewView.classList.add('is-revealing');
+            window.setTimeout(() => previewView.classList.remove('is-revealing'), 720);
+        }
     }
 
     window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
@@ -303,7 +512,7 @@ async function createPermit(prepared = false) {
 function setCardSide(showBack) {
     const currentlyBack = cardObject.classList.contains('is-back');
     cardObject.setAttribute('aria-pressed', String(showBack));
-    cardObject.setAttribute('aria-label', showBack ? '翻回校巴證正面' : '查看校巴證條款');
+    cardObject.setAttribute('aria-label', showBack ? t('showFront') : t('showBack'));
     cardFront.setAttribute('aria-hidden', String(showBack));
     cardBack.setAttribute('aria-hidden', String(!showBack));
     if (currentlyBack === showBack) return;
@@ -343,6 +552,68 @@ function populateForm(params) {
 
 async function openForm(historyMode = 'push') {
     await switchView('form', historyMode);
+}
+
+async function discardCardAndOpenForm(historyMode = 'push') {
+    if (activeView !== 'preview' || reducedMotion) {
+        await openForm(historyMode);
+        return;
+    }
+    if (isDiscarding) return;
+
+    isDiscarding = true;
+    editPermitButton.disabled = true;
+    cardObject.setAttribute('tabindex', '-1');
+    window.clearTimeout(cardMoveTimer);
+    cardMoveRun++;
+    cardScaler.classList.remove('is-relocating');
+    cardScaler.style.removeProperty('--card-move-x');
+    cardScaler.style.removeProperty('--card-move-y');
+    cardScaler.style.removeProperty('--card-move-scale');
+
+    const rect = cardScaler.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const baseScale = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1;
+    const exitX = window.innerWidth + rect.width * 0.72 - centerX;
+    const exitY = window.innerHeight + rect.height * 0.72 - centerY;
+    const peakX = Math.max(42, exitX * 0.3);
+    const peakY = -Math.min(170, Math.max(82, centerY * 0.24));
+
+    cardScaler.style.setProperty('--discard-peak-x', `${peakX}px`);
+    cardScaler.style.setProperty('--discard-peak-y', `${peakY}px`);
+    cardScaler.style.setProperty('--discard-exit-x', `${exitX}px`);
+    cardScaler.style.setProperty('--discard-exit-y', `${exitY}px`);
+    cardScaler.style.setProperty('--discard-peak-scale', String(baseScale * 1.035));
+    cardScaler.style.setProperty('--discard-final-scale', String(baseScale * 0.1));
+    document.body.classList.add('discarding-card');
+    cardScaler.classList.add('is-discarding');
+
+    await new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+            if (settled) return;
+            settled = true;
+            window.clearTimeout(fallbackTimer);
+            cardScaler.removeEventListener('animationend', onAnimationEnd);
+            resolve();
+        };
+        const onAnimationEnd = (event) => {
+            if (event.target === cardScaler && event.animationName === 'discard-card') finish();
+        };
+        const fallbackTimer = window.setTimeout(finish, 950);
+        cardScaler.addEventListener('animationend', onAnimationEnd);
+    });
+
+    await switchView('form', historyMode, true);
+    cardScaler.classList.remove('is-discarding');
+    document.body.classList.remove('discarding-card');
+    ['--discard-peak-x', '--discard-peak-y', '--discard-exit-x', '--discard-exit-y', '--discard-peak-scale', '--discard-final-scale']
+        .forEach((property) => cardScaler.style.removeProperty(property));
+    editPermitButton.disabled = false;
+    cardObject.setAttribute('tabindex', '0');
+    isDiscarding = false;
+    form.elements.Name?.focus({ preventScroll: true });
 }
 
 async function openCreating(historyMode = 'push', shouldGenerate = true) {
@@ -397,6 +668,7 @@ function drawAmbient() {
 
 function openFullscreenPreview() {
     isFullscreen = true;
+    isClosingFullscreen = false;
     setCardSide(false);
     fullscreenPreview.hidden = false;
     fullscreenMount.append(cardScaler);
@@ -408,8 +680,12 @@ function openFullscreenPreview() {
     });
 }
 
-function closeFullscreenPreview() {
-    if (!isFullscreen) return;
+async function closeFullscreenPreview() {
+    if (!isFullscreen || isClosingFullscreen) return;
+    isClosingFullscreen = true;
+    if (!reducedMotion) {
+        await playExitAnimation(fullscreenPreview, 'is-closing', 'fullscreen-out', 340);
+    }
     isFullscreen = false;
     previewMount.append(cardScaler);
     fullscreenPreview.hidden = true;
@@ -417,6 +693,7 @@ function closeFullscreenPreview() {
     cardObject.setAttribute('tabindex', '0');
     requestAnimationFrame(resizeCard);
     fullscreenButton.focus({ preventScroll: true });
+    isClosingFullscreen = false;
 }
 
 function loadImage(src) {
@@ -529,14 +806,14 @@ async function renderPermitImage() {
 }
 
 async function sharePermitImage() {
-    const originalLabel = '分享圖片';
+    const originalLabel = t('shareButton');
     shareImageButton.disabled = true;
-    shareButtonLabel.textContent = '製作中…';
+    shareButtonLabel.textContent = t('shareWorking');
     try {
         const blob = await renderPermitImage();
         const file = new File([blob], 'cuhk-bus-permit.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
-            await navigator.share({ title: '中大校巴證', files: [file] });
+            await navigator.share({ title: t('shareTitle'), files: [file] });
             shareButtonLabel.textContent = originalLabel;
         } else {
             const link = document.createElement('a');
@@ -545,10 +822,10 @@ async function sharePermitImage() {
             link.download = 'cuhk-bus-permit.png';
             link.click();
             window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-            shareButtonLabel.textContent = '已儲存';
+            shareButtonLabel.textContent = t('shareSaved');
         }
     } catch (error) {
-        if (error?.name !== 'AbortError') shareButtonLabel.textContent = '未能分享';
+        if (error?.name !== 'AbortError') shareButtonLabel.textContent = t('shareFailed');
         else shareButtonLabel.textContent = originalLabel;
     } finally {
         shareImageButton.disabled = false;
@@ -559,9 +836,9 @@ form.addEventListener('submit', async (event) => {
     event.preventDefault();
     permitParams = new URLSearchParams(new FormData(form));
     const buttonLabel = form.querySelector('.generate-button span');
-    buttonLabel.textContent = '進入繪製室…';
+    buttonLabel.textContent = t('generateEntering');
     await openCreating('push', true);
-    buttonLabel.textContent = '開始繪製';
+    buttonLabel.textContent = t('generate');
 });
 
 cardObject.addEventListener('click', flipCard);
@@ -577,8 +854,11 @@ brandHome.addEventListener('click', (event) => {
     if (activeView !== 'form') openForm('push');
 });
 editButton.addEventListener('click', () => openForm('push'));
+languageToggles.forEach((button) => {
+    button.addEventListener('click', () => setLanguage(currentLanguage === 'zh' ? 'en' : 'zh'));
+});
 fullscreenButton.addEventListener('click', openFullscreenPreview);
-editPermitButton.addEventListener('click', () => openForm('push'));
+editPermitButton.addEventListener('click', () => discardCardAndOpenForm('push'));
 fullscreenPreview.addEventListener('click', closeFullscreenPreview);
 shareImageButton.addEventListener('click', sharePermitImage);
 document.querySelector('.printbtn').addEventListener('click', () => window.print());
@@ -609,6 +889,9 @@ window.addEventListener('popstate', async () => {
 
 async function initialize() {
     drawAmbient();
+    let savedLanguage = 'zh';
+    try { savedLanguage = window.localStorage.getItem('permit-language') || 'zh'; } catch { /* Storage may be unavailable. */ }
+    setLanguage(savedLanguage, false);
     const validInput = form.elements.Valid;
     const today = new Date();
     const nextYear = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());

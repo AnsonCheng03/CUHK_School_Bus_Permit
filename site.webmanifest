@@ -1,0 +1,19 @@
+{
+    "name": "中大校巴證製作器",
+    "short_name": "校巴證",
+    "description": "製作、預覽、分享及列印個人化中大校巴證圖片。",
+    "lang": "zh-HK",
+    "start_url": "/_permit/",
+    "scope": "/_permit/",
+    "display": "standalone",
+    "background_color": "#180627",
+    "theme_color": "#180627",
+    "icons": [
+        {
+            "src": "bus-app-icon-256.png",
+            "sizes": "256x256",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
+}
