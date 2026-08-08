@@ -1390,7 +1390,21 @@ body.discarding-card .app-promo {
     cursor: pointer;
 }
 
+.field input[type="date"]::-webkit-date-and-time-value {
+    height: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    padding-inline-start: 15px;
+    text-align: start;
+}
+
+.field input[type="date"]::-webkit-datetime-edit {
+    padding: 0;
+}
+
 .field input[type="date"]::-webkit-calendar-picker-indicator {
+    margin-inline-end: 8px;
     padding: 7px;
     border-radius: 8px;
     background-color: #f1e9f5;

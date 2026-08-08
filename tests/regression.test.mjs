@@ -71,6 +71,9 @@ test('mobile viewport and safe areas remain constrained', () => {
         assert.match(styles, new RegExp(`safe-area-inset-${edge}`));
     }
     assert.match(styles, /permit-form input:not\(\[type="radio"\]\)[\s\S]*font-size: 16px/);
+    assert.match(styles, /\.field input\[type="date"\][\s\S]*padding: 0/);
+    assert.match(styles, /::-webkit-date-and-time-value[\s\S]*height: 100%/);
+    assert.match(styles, /::-webkit-date-and-time-value[\s\S]*align-items: center/);
     assert.match(script, /Math\.max\(1, mount\.clientWidth - 24\)/);
     assert.match(script, /visualViewport\?\.addEventListener\('resize', resizeCard/);
 });
