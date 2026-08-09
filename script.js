@@ -1,5 +1,6 @@
 const assetVersion = new URL(document.currentScript.src).searchParams.get('v') || 'dev';
 const form = document.querySelector('.permit-form');
+const permitTypeRadios = [...form.querySelectorAll('input[name="Type"]')];
 const pageShell = document.querySelector('.page-shell');
 const pageTitle = document.querySelector('#page-title');
 const stepPill = document.querySelector('.step-pill');
@@ -35,13 +36,16 @@ const networkStatusLabel = document.querySelector('.network-status-label');
 const updateDialog = document.querySelector('.update-dialog');
 const updateDialogTitle = document.querySelector('#update-dialog-title');
 const updateDialogMessage = document.querySelector('#update-dialog-message');
+const updateDialogReload = document.querySelector('.update-dialog-reload');
 const updateDialogClose = document.querySelector('.update-dialog-close');
+const updateDialogActions = document.querySelector('.update-dialog-actions');
 const updateProgress = document.querySelector('.update-progress');
 const updateProgressFill = document.querySelector('.update-progress-fill');
 const platformDestinations = [...document.querySelectorAll('[data-platform]')];
 const siteHeader = document.querySelector('.site-header');
 const siteFooter = document.querySelector('.site-footer');
 const appLoader = document.querySelector('.app-loader');
+const appLoaderStatusText = document.querySelector('.app-loader-status-text');
 const cardAccessibleDescription = document.querySelector('#card-accessible-description');
 const titleMeta = document.querySelector('meta[name="title"]');
 const descriptionMeta = document.querySelector('meta[name="description"]');
@@ -111,9 +115,9 @@ const seoByLanguage = {
 
 const translations = {
     zh: {
-        skipLink: '跳至主要內容', loadingLabel: '正在載入 CU Bus', loadingText: '正在載入', homeLabel: '返回校巴證製作首頁', brandName: '中大校巴資訊站', brandSub: '校巴證製作',
+        skipLink: '跳至主要內容', loadingLabel: '正在載入 CU Bus', loadingText: '正在載入', loadingAppFiles: '正在載入應用程式檔案…', loadingSavedAndImages: '正在還原資料及載入校巴證圖片…', loadingSaved: '正在還原已儲存資料…', loadingImages: '正在載入校巴證圖片…', loadingPreparing: '正在準備校巴證製作工具…', homeLabel: '返回校巴證製作首頁', brandName: '中大校巴資訊站', brandSub: '校巴證製作',
         rebuild: '重新製作', unofficial: '非官方工具', formTitle: '校巴證資料', busTypeLegend: '想乘搭哪種校巴？',
-        transitTitle: '穿梭校巴', transitSub: '校園穿梭路線', lessonTitle: '轉堂校巴', lessonSub: '課堂接駁路線',
+        transitTitle: '穿梭校巴', transitSub: '1、2、3、4、8、N、H', lessonTitle: '轉堂校巴', lessonSub: '5、6A、6B、7',
         nameLabel: '姓名', required: '必填', namePlaceholder: '例如：CHAN Siu-ming（陳小明）',
         sidLabel: '學生編號', sidPlaceholder: '例如：1155125528', majorLabel: '主修科目', majorPlaceholder: '例如：Fine Arts',
         validLabel: '有效期', validSub: '截止日期', privacy: '只輸入你願意顯示於校巴證上的資料', generate: '開始繪製',
@@ -128,12 +132,12 @@ const translations = {
         showBack: '查看校巴證乘車須知', showFront: '翻回校巴證正面', shareWorking: '正在製作分享圖片', shareSaved: '圖片已儲存', shareFailed: '未能分享圖片', shareTitle: '中大校巴證',
         online: '在線', offline: '離線', onlineUpdateLabel: '目前在線，檢查是否有更新', offlineUpdateLabel: '目前離線，連線後可檢查更新',
         checkingTitle: '正在檢查更新', checkingMessage: '正在確認是否為最新版本。', updatingTitle: '正在更新', updatingMessage: '正在更新離線檔案，完成後會自動重新載入。',
-        latestTitle: '已是最新版本', latestMessage: '你正在使用最新版本。', offlineTitle: '目前離線', offlineMessage: '連線後再檢查更新。', updateErrorTitle: '未能更新', updateErrorMessage: '請檢查網絡連線後再試。', updateProgressLabel: '更新進度', closeUpdate: '關閉'
+        latestTitle: '已是最新版本', latestMessage: '你正在使用最新版本。', offlineTitle: '目前離線', offlineMessage: '連線後再檢查更新。', updateErrorTitle: '未能更新', updateErrorMessage: '請檢查網絡連線後再試。', refreshingTitle: '正在重新載入', refreshingMessage: '正在重新下載最新內容，完成後會自動開啟。', updateProgressLabel: '更新進度', reloadLatest: '重新載入最新內容', closeUpdate: '關閉'
     },
     en: {
-        skipLink: 'Skip to main content', loadingLabel: 'Loading CU Bus', loadingText: 'Loading', homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
+        skipLink: 'Skip to main content', loadingLabel: 'Loading CU Bus', loadingText: 'Loading', loadingAppFiles: 'Loading application files…', loadingSavedAndImages: 'Restoring details and loading permit images…', loadingSaved: 'Restoring saved details…', loadingImages: 'Loading permit images…', loadingPreparing: 'Preparing the permit maker…', homeLabel: 'Return to the permit generator', brandName: 'CU Bus Infopage', brandSub: 'School Bus Permit',
         rebuild: 'Start again', unofficial: 'Unofficial tool', formTitle: 'Permit details', busTypeLegend: 'Which bus would you like to take?',
-        transitTitle: 'Shuttle Bus', transitSub: 'Campus shuttle routes', lessonTitle: 'Meet-Class Bus', lessonSub: 'Between-class routes',
+        transitTitle: 'Shuttle Bus', transitSub: '1, 2, 3, 4, 8, N, H', lessonTitle: 'Meet-Class Bus', lessonSub: '5, 6A, 6B, 7',
         nameLabel: 'Name', required: 'Required', namePlaceholder: 'e.g. CHAN Siu-ming',
         sidLabel: 'Student ID', sidPlaceholder: 'e.g. 1155125528', majorLabel: 'Major', majorPlaceholder: 'e.g. Fine Arts',
         validLabel: 'Valid until', validSub: 'Expiry date', privacy: 'Only enter information you want shown on the permit', generate: 'Create permit',
@@ -148,7 +152,7 @@ const translations = {
         showBack: 'View passenger notice', showFront: 'Return to the permit front', shareWorking: 'Creating share image', shareSaved: 'Image saved', shareFailed: 'Unable to share image', shareTitle: 'CUHK School Bus Permit',
         online: 'Online', offline: 'Offline', onlineUpdateLabel: 'Online. Check for updates', offlineUpdateLabel: 'Offline. Connect to check for updates',
         checkingTitle: 'Checking for updates', checkingMessage: 'Confirming that this is the latest version.', updatingTitle: 'Updating', updatingMessage: 'Refreshing offline files. The app will reload when ready.',
-        latestTitle: 'Latest version', latestMessage: 'You are using the latest version.', offlineTitle: 'You are offline', offlineMessage: 'Connect to the internet and try again.', updateErrorTitle: 'Update failed', updateErrorMessage: 'Check your connection and try again.', updateProgressLabel: 'Update progress', closeUpdate: 'Close'
+        latestTitle: 'Latest version', latestMessage: 'You are using the latest version.', offlineTitle: 'You are offline', offlineMessage: 'Connect to the internet and try again.', updateErrorTitle: 'Update failed', updateErrorMessage: 'Check your connection and try again.', refreshingTitle: 'Reloading', refreshingMessage: 'Downloading the latest content. The app will reopen automatically.', updateProgressLabel: 'Update progress', reloadLatest: 'Reload latest content', closeUpdate: 'Close'
     }
 };
 
@@ -169,6 +173,9 @@ let validDateChanged = false;
 let serviceWorkerRegistration;
 let updateInProgress = false;
 let updateDialogCloseTimer;
+let updateDialogReturnFocus;
+let startupLanguage = 'zh';
+const startupLoadState = { language: false, draft: false, images: false };
 
 const permitFieldNames = ['Type', 'Name', 'SID', 'Major', 'Valid'];
 const databaseName = 'cu-bus-permit';
@@ -582,7 +589,6 @@ function setCardData(params) {
     document.querySelector('.cardname h1').textContent = isTransit ? '穿梭校巴證' : '轉堂校巴證';
     document.querySelector('.cardname h2').textContent = isTransit ? 'Shuttle Bus Permit' : 'Meet-Class Bus Permit';
     const artworkSource = `getcard/images/${isTransit ? 'schbus_d.png' : 'schbus_l.png'}`;
-    card.style.background = `url("${artworkSource}")`;
     cardArtwork.src = artworkSource;
     document.querySelectorAll('.routes .transit, .routes .lesson').forEach((route) => {
         route.style.display = '';
@@ -649,6 +655,32 @@ function preloadStartupImages() {
 function minimumStartupTime() {
     if (reducedMotion) return Promise.resolve();
     return new Promise((resolve) => window.setTimeout(resolve, 850));
+}
+
+function setStartupStatus(key) {
+    if (!appLoaderStatusText) return;
+    appLoaderStatusText.dataset.i18n = key;
+    appLoaderStatusText.textContent = translations[startupLanguage][key];
+}
+
+function updateStartupStatus() {
+    const savedDetailsReady = startupLoadState.language && startupLoadState.draft;
+    if (!savedDetailsReady && !startupLoadState.images) setStartupStatus('loadingSavedAndImages');
+    else if (!savedDetailsReady) setStartupStatus('loadingSaved');
+    else if (!startupLoadState.images) setStartupStatus('loadingImages');
+    else setStartupStatus('loadingPreparing');
+}
+
+function trackStartupTask(name, promise, onValue) {
+    return Promise.resolve(promise)
+        .then((value) => {
+            onValue?.(value);
+            return value;
+        })
+        .finally(() => {
+            startupLoadState[name] = true;
+            updateStartupStatus();
+        });
 }
 
 function dismissAppLoader() {
@@ -917,6 +949,13 @@ function populateForm(params) {
     if (params.has('Valid')) form.elements.Valid.value = dateInputValue(params.get('Valid'));
     const type = params.get('Type');
     if (type && form.elements.Type) form.elements.Type.value = type;
+    updatePermitTypeTabStops();
+}
+
+function updatePermitTypeTabStops() {
+    permitTypeRadios.forEach((radio) => {
+        radio.tabIndex = radio.checked ? 0 : -1;
+    });
 }
 
 async function openForm(historyMode = 'push') {
@@ -1107,104 +1146,79 @@ function loadImage(src) {
     });
 }
 
-function roundedRectangle(context, x, y, width, height, radius) {
-    context.beginPath();
-    context.moveTo(x + radius, y);
-    context.arcTo(x + width, y, x + width, y + height, radius);
-    context.arcTo(x + width, y + height, x, y + height, radius);
-    context.arcTo(x, y + height, x, y, radius);
-    context.arcTo(x, y, x + width, y, radius);
-    context.closePath();
-}
-
-function drawSpacedText(context, text, x, y, spacing) {
-    let cursor = x;
-    [...text].forEach((character) => {
-        context.fillText(character, cursor, y);
-        cursor += context.measureText(character).width + spacing;
+function blobToDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error || new Error('Could not embed permit asset'));
+        reader.readAsDataURL(blob);
     });
 }
 
+async function imageSourceAsDataUrl(src) {
+    if (src.startsWith('data:')) return src;
+    const response = await fetch(src, { cache: 'force-cache' });
+    if (!response.ok) throw new Error(`Could not embed ${src}`);
+    return blobToDataUrl(await response.blob());
+}
+
+function copyRenderedStyles(source, clone) {
+    const rendered = getComputedStyle(source);
+    for (let index = 0; index < rendered.length; index += 1) {
+        const property = rendered[index];
+        clone.style.setProperty(property, rendered.getPropertyValue(property), rendered.getPropertyPriority(property));
+    }
+    [...source.children].forEach((child, index) => {
+        copyRenderedStyles(child, clone.children[index]);
+    });
+}
+
+async function clonePermitForImage() {
+    const permit = card.cloneNode(true);
+    copyRenderedStyles(card, permit);
+    permit.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    permit.style.setProperty('background-image', 'none', 'important');
+    permit.style.setProperty('box-shadow', 'none', 'important');
+    permit.style.setProperty('cursor', 'default', 'important');
+    permit.style.setProperty('overflow', 'hidden', 'important');
+
+    const sourceImages = [...card.querySelectorAll('img')];
+    const clonedImages = [...permit.querySelectorAll('img')];
+    await Promise.all(sourceImages.map(async (source, index) => {
+        const clone = clonedImages[index];
+        clone.removeAttribute('srcset');
+        clone.removeAttribute('loading');
+        clone.src = await imageSourceAsDataUrl(source.currentSrc || source.src);
+    }));
+    return permit;
+}
+
 async function renderPermitImage() {
-    const type = permitParams.get('Type') === 'Lesson' ? 'Lesson' : 'Transit';
-    const isTransit = type === 'Transit';
-    const [background, logo] = await Promise.all([
-        loadImage(`getcard/images/${isTransit ? 'schbus_d.png' : 'schbus_l.png'}`),
-        loadImage('getcard/images/CUHK.png')
-    ]);
+    await document.fonts?.ready;
+    const permit = await clonePermitForImage();
+    const serializedPermit = new XMLSerializer().serializeToString(permit);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="560" height="356" viewBox="0 0 560 356"><foreignObject width="560" height="356">${serializedPermit}</foreignObject></svg>`;
+    const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    const image = await loadImage(svgUrl);
     const canvas = document.createElement('canvas');
     canvas.width = 1120;
     canvas.height = 712;
     const context = canvas.getContext('2d');
-    context.scale(2, 2);
-    roundedRectangle(context, 0, 0, 560, 356, 20);
-    context.clip();
-    context.drawImage(background, 0, 0, 560, 356);
-    context.drawImage(logo, 35, 23, 53, 42);
-
-    context.fillStyle = '#fff';
-    context.textBaseline = 'alphabetic';
-    context.font = '15px Arial, sans-serif';
-    drawSpacedText(context, '香港中文大學', 98, 39, 3.1);
-    context.font = '12.5px Georgia, serif';
-    context.fillText('The Chinese University of Hong Kong', 98, 56);
-    context.textAlign = 'center';
-    context.font = '16px Arial, sans-serif';
-    context.fillText('落車前請按鐘一次', 443, 39);
-    context.font = '10px Arial, sans-serif';
-    context.fillText('TO STOP PRESS THE BELL ONCE', 443, 54);
-    context.textAlign = 'left';
-
-    context.font = 'bold 45px Arial, sans-serif';
-    drawSpacedText(context, isTransit ? '穿梭校巴證' : '轉堂校巴證', 37, 116, 1.5);
-    context.font = '20.5px Arial, sans-serif';
-    context.fillText(isTransit ? 'SHUTTLE BUS PERMIT' : 'MEET-CLASS BUS PERMIT', 40, 143);
-    context.fillStyle = 'rgb(236,240,241)';
-    context.font = '10px Arial, sans-serif';
-    context.fillText('持證者獲交通事務處批准乘搭下列的穿梭校巴路線', 40, 163);
-    context.fillText('The Permit Holder is allowed to ride on the following routes', 40, 176);
-
-    const routeSets = isTransit
-        ? [
-            ['1', '#fff149', '#f3b53a'], ['2', '#fff149', '#f3b53a'], ['3', '#a4cc39', '#318761'],
-            ['4', '#f1a63b', '#e75a24'], ['8', '#ffe3a8', '#ffc55a'], ['N', '#d1b4d5', '#7961a8'], ['H', '#896391', '#453087']
-        ]
-        : [
-            ['5', '#c2d6ea', '#29a1d8'], ['6A', '#7c8644', '#585823'], ['6B', '#4f88c1', '#3f438f'], ['7', '#c2c2c2', '#666666']
-        ];
-    routeSets.forEach(([label, from, to], index) => {
-        const x = 40 + index * 31;
-        const gradient = context.createLinearGradient(x, 0, x + 31, 0);
-        gradient.addColorStop(0, from);
-        gradient.addColorStop(1, to);
-        context.fillStyle = gradient;
-        context.fillRect(x, 188, 31, 20);
-        context.fillStyle = '#fff';
-        context.textAlign = 'center';
-        context.font = 'bold 15px Arial, sans-serif';
-        context.fillText(label, x + 15.5, 204);
-    });
-
-    const today = new Date();
-    const values = [
-        ['學生姓名  Name', permitParams.get('Name') || ''],
-        ['學生編號  Student ID', permitParams.get('SID') || '1155125528'],
-        ['主修科目  Major', permitParams.get('Major') || 'B.A. in Fine Arts'],
-        ['有效期至  Valid Until', formatPermitDate(permitParams.get('Valid')) || defaultPermitExpiry(today).display]
-    ];
-    context.textAlign = 'left';
-    values.forEach(([label, value], index) => {
-        const y = 242 + index * 23;
-        context.fillStyle = '#fff';
-        context.font = '12px Arial, sans-serif';
-        context.fillText(label, 40, y);
-        context.font = '13px Arial, sans-serif';
-        context.fillText(value, 160, y);
-    });
-
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
     return new Promise((resolve, reject) => {
         canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Could not create permit image')), 'image/png');
     });
+}
+
+function downloadPermitImage(blob) {
+    const link = document.createElement('a');
+    const objectUrl = URL.createObjectURL(blob);
+    link.href = objectUrl;
+    link.download = 'cuhk-bus-permit.png';
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
 
 async function sharePermitImage() {
@@ -1217,20 +1231,23 @@ async function sharePermitImage() {
         const blob = await renderPermitImage();
         const file = new File([blob], 'cuhk-bus-permit.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
-            await navigator.share({ title: t('shareTitle'), files: [file] });
-            shareButtonLabel.textContent = originalLabel;
+            try {
+                await navigator.share({ title: t('shareTitle'), files: [file] });
+                shareButtonLabel.textContent = originalLabel;
+            } catch (error) {
+                if (error?.name === 'AbortError') throw error;
+                downloadPermitImage(blob);
+                shareButtonLabel.textContent = t('shareSaved');
+                announce(t('shareSaved'));
+            }
         } else {
-            const link = document.createElement('a');
-            const objectUrl = URL.createObjectURL(blob);
-            link.href = objectUrl;
-            link.download = 'cuhk-bus-permit.png';
-            link.click();
-            window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+            downloadPermitImage(blob);
             shareButtonLabel.textContent = t('shareSaved');
             announce(t('shareSaved'));
         }
     } catch (error) {
         if (error?.name !== 'AbortError') {
+            console.error('Permit image export failed', error);
             shareButtonLabel.textContent = t('shareFailed');
             announce(t('shareFailed'));
         }
@@ -1258,7 +1275,12 @@ form.addEventListener('submit', async (event) => {
 });
 
 form.addEventListener('input', scheduleFormDraftSave);
-form.addEventListener('change', scheduleFormDraftSave);
+form.addEventListener('change', (event) => {
+    if (event.target instanceof HTMLInputElement && event.target.name === 'Type') {
+        updatePermitTypeTabStops();
+    }
+    scheduleFormDraftSave();
+});
 form.elements.Valid.addEventListener('input', () => { validDateChanged = true; });
 form.elements.Valid.addEventListener('change', () => { validDateChanged = true; });
 window.addEventListener('pagehide', () => {
@@ -1298,18 +1320,41 @@ function setUpdateProgress(value) {
     updateProgress.setAttribute('aria-valuenow', String(progress));
 }
 
-function showUpdateDialog(titleKey, messageKey, { showProgress = false, closable = true } = {}) {
+function setUpdateDialogBackgroundInert(isInert) {
+    pageShell.inert = isInert;
+    if (isInert) {
+        pageShell.setAttribute('inert', '');
+        pageShell.setAttribute('aria-hidden', 'true');
+    } else {
+        pageShell.removeAttribute('inert');
+        pageShell.removeAttribute('aria-hidden');
+    }
+}
+
+function showUpdateDialog(titleKey, messageKey, { showProgress = false, closable = true, showReload = false } = {}) {
     window.clearTimeout(updateDialogCloseTimer);
     updateDialog.classList.remove('is-closing');
     updateDialogTitle.textContent = t(titleKey);
     updateDialogMessage.textContent = t(messageKey);
     updateProgress.classList.toggle('is-hidden', !showProgress);
     updateProgress.setAttribute('aria-hidden', String(!showProgress));
+    updateDialogReload.hidden = !showReload;
+    updateDialogReload.disabled = !showReload || updateInProgress;
     updateDialogClose.classList.toggle('is-placeholder', !closable);
     updateDialogClose.disabled = !closable;
-    if (!updateDialog.open) updateDialog.showModal();
+    updateDialogActions.hidden = !closable && !showReload;
+    if (!updateDialog.open) {
+        const activeElement = document.activeElement;
+        updateDialogReturnFocus = activeElement instanceof HTMLElement
+            && activeElement !== document.body
+            && !activeElement.matches(':disabled')
+            ? activeElement
+            : networkUpdateButton;
+        updateDialog.showModal();
+    }
     if (closable) updateDialogClose.focus({ preventScroll: true });
     else updateDialog.focus({ preventScroll: true });
+    setUpdateDialogBackgroundInert(true);
 }
 
 function closeUpdateDialog() {
@@ -1318,6 +1363,10 @@ function closeUpdateDialog() {
         window.clearTimeout(updateDialogCloseTimer);
         updateDialog.classList.remove('is-closing');
         if (updateDialog.open) updateDialog.close();
+        setUpdateDialogBackgroundInert(false);
+        const focusTarget = updateDialogReturnFocus;
+        updateDialogReturnFocus = null;
+        if (focusTarget?.isConnected && !focusTarget.disabled) focusTarget.focus({ preventScroll: true });
     };
     if (reducedMotion) {
         finishClose();
@@ -1348,6 +1397,28 @@ async function clearPermitCaches() {
     await Promise.all(cacheNames
         .filter((cacheName) => cacheName.startsWith('cu-bus-permit-'))
         .map((cacheName) => caches.delete(cacheName)));
+}
+
+async function reloadLatestContent() {
+    if (updateInProgress || !navigator.onLine) return;
+    updateInProgress = true;
+    networkUpdateButton.disabled = true;
+    showUpdateDialog('refreshingTitle', 'refreshingMessage', { showProgress: true, closable: false });
+    setUpdateProgress(10);
+    try {
+        await clearPermitCaches();
+        setUpdateProgress(55);
+        const registration = serviceWorkerRegistration || await navigator.serviceWorker?.getRegistration('./');
+        if (registration) await registration.unregister();
+        setUpdateProgress(100);
+        await new Promise((resolve) => window.setTimeout(resolve, reducedMotion ? 0 : 350));
+        window.location.reload();
+    } catch {
+        updateInProgress = false;
+        networkUpdateButton.disabled = false;
+        showUpdateDialog('updateErrorTitle', 'updateErrorMessage', { showReload: navigator.onLine });
+        announce(t('updateErrorMessage'));
+    }
 }
 
 function waitForWorkerActivation(worker) {
@@ -1420,7 +1491,7 @@ async function checkForUpdates() {
             await serviceWorkerRegistration?.update();
             updateInProgress = false;
             networkUpdateButton.disabled = false;
-            showUpdateDialog('latestTitle', 'latestMessage');
+            showUpdateDialog('latestTitle', 'latestMessage', { showReload: true });
             announce(t('latestMessage'));
             return;
         }
@@ -1431,19 +1502,33 @@ async function checkForUpdates() {
     } catch {
         updateInProgress = false;
         networkUpdateButton.disabled = false;
-        showUpdateDialog('updateErrorTitle', 'updateErrorMessage');
+        showUpdateDialog('updateErrorTitle', 'updateErrorMessage', { showReload: navigator.onLine });
         announce(t('updateErrorMessage'));
     }
 }
 
 networkUpdateButton.addEventListener('click', checkForUpdates);
+updateDialogReload.addEventListener('click', reloadLatestContent);
 updateDialogClose.addEventListener('click', closeUpdateDialog);
 updateDialog.addEventListener('cancel', (event) => {
     event.preventDefault();
     closeUpdateDialog();
 });
-updateDialog.addEventListener('click', (event) => {
-    if (event.target === updateDialog) closeUpdateDialog();
+updateDialog.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    const focusTargets = [updateDialogReload, updateDialogClose]
+        .filter((button) => !button.hidden && !button.disabled);
+    if (!focusTargets.length) {
+        event.preventDefault();
+        updateDialog.focus({ preventScroll: true });
+        return;
+    }
+    const currentIndex = focusTargets.indexOf(document.activeElement);
+    const nextIndex = event.shiftKey
+        ? (currentIndex <= 0 ? focusTargets.length - 1 : currentIndex - 1)
+        : (currentIndex < 0 || currentIndex === focusTargets.length - 1 ? 0 : currentIndex + 1);
+    event.preventDefault();
+    focusTargets[nextIndex].focus({ preventScroll: true });
 });
 window.addEventListener('online', updateNetworkStatus);
 window.addEventListener('offline', updateNetworkStatus);
@@ -1506,12 +1591,16 @@ function registerServiceWorker() {
 
 async function initialize() {
     drawAmbient();
+    updateStartupStatus();
     const [storedLanguage, storedDraft] = await Promise.all([
-        readSavedValue(languagePreferenceKey),
-        readSavedValue(formDraftKey),
-        preloadStartupImages(),
+        trackStartupTask('language', readSavedValue(languagePreferenceKey), (language) => {
+            startupLanguage = language === 'en' ? 'en' : 'zh';
+        }),
+        trackStartupTask('draft', readSavedValue(formDraftKey)),
+        trackStartupTask('images', preloadStartupImages()),
         minimumStartupTime()
     ]);
+    setStartupStatus('loadingPreparing');
     const savedLanguage = storedLanguage === 'en' ? 'en' : 'zh';
     setLanguage(savedLanguage, false);
     configureAppDestination();

@@ -324,7 +324,7 @@ svg {
 
 .update-dialog-icon svg { width: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .update-dialog h2 { min-height: 23px; margin: 0; font-size: 19px; }
-.update-dialog p { min-height: 38px; margin: 9px 0 0; color: #6f6475; font-size: 12px; line-height: 1.55; }
+.update-dialog p { min-height: 20px; margin: 9px 0 0; color: #6f6475; font-size: 12px; line-height: 1.55; }
 
 .update-progress {
     height: 7px;
@@ -344,25 +344,47 @@ svg {
 }
 
 .update-progress.is-hidden {
-    visibility: hidden;
-    opacity: 0;
+    display: none;
 }
 
-.update-dialog-close {
-    min-width: 96px;
+.update-dialog-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    margin-top: 16px;
+}
+
+.update-dialog-actions[hidden] { display: none; }
+
+.update-dialog-close,
+.update-dialog-reload {
+    min-width: 84px;
     min-height: 40px;
-    margin-top: 20px;
-    padding: 0 18px;
+    padding: 0 12px;
     color: var(--purple-deep);
-    border: 0;
     border-radius: 11px;
-    background: var(--gold);
     cursor: pointer;
+    font-size: 12px;
     font-weight: 800;
 }
 
-.update-dialog-close:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
-.update-dialog-close.is-placeholder { visibility: hidden; pointer-events: none; }
+.update-dialog-close {
+    border: 0;
+    background: var(--gold);
+}
+
+.update-dialog-reload {
+    color: #4f2a61;
+    border: 1px solid rgba(85,34,122,0.24);
+    background: #f4eef6;
+}
+
+.update-dialog-reload[hidden] { display: none; }
+.update-dialog-reload[hidden] + .update-dialog-close { grid-column: 1 / -1; justify-self: center; }
+.update-dialog-close:focus-visible,
+.update-dialog-reload:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
+.update-dialog-close.is-placeholder { display: none; }
 
 .step-pill,
 .unofficial-badge {

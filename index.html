@@ -84,22 +84,23 @@
         .app-loader > strong { position: relative; z-index: 1; font: 800 13px/1 Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
         .app-loader-progress { position: relative; z-index: 1; width: min(150px, 46vw); height: 3px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.1); }
         .app-loader-progress i { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, var(--gold), transparent); transform: translateX(-100%); animation: loader-progress 1s ease-in-out infinite; }
-        .app-loader-status-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        .app-loader-status-text { position: relative; z-index: 1; min-height: 16px; max-width: min(280px, 78vw); color: rgba(255,255,255,.72); font: 500 11px/1.45 Arial, sans-serif; letter-spacing: .04em; text-align: center; opacity: 0; visibility: hidden; transform: translateY(-4px); animation: loader-status-reveal 200ms ease 1.5s forwards; }
         @keyframes loader-orbit { to { transform: rotate(360deg); } }
         @keyframes loader-bus { from { transform: translate3d(-7px,2px,0) rotate(-1.5deg); } to { transform: translate3d(7px,-3px,0) rotate(1.5deg); } }
         @keyframes loader-progress { 50%, 100% { transform: translateX(100%); } }
+        @keyframes loader-status-reveal { to { opacity: 1; visibility: visible; transform: translateY(0); } }
         @media (prefers-reduced-motion: reduce) { .app-loader::before, .app-loader::after, .app-loader-icon-wrap, .app-loader-progress i { animation-duration: .01ms; animation-iteration-count: 1; } }
     </style>
-    <script src="bootstrap.js?v=20260809141500" defer></script>
+    <script src="bootstrap.js?v=20260809200000" defer></script>
     <noscript>
-        <link href="getcard/style.css?v=20260809141500" rel="stylesheet">
-        <link href="style.css?v=20260809141500" rel="stylesheet">
-        <link href="spa.css?v=20260809141500" rel="stylesheet">
+        <link href="getcard/style.css?v=20260809200000" rel="stylesheet">
+        <link href="style.css?v=20260809200000" rel="stylesheet">
+        <link href="spa.css?v=20260809200000" rel="stylesheet">
     </noscript>
 </head>
 
 <body class="is-booting" aria-busy="true">
-    <a class="skip-link" href="#main-content" data-i18n="skipLink">跳至主要內容</a>
+    <a class="skip-link" href="#main-content" tabindex="0" data-i18n="skipLink">跳至主要內容</a>
     <div class="app-loader" role="status" aria-live="polite" aria-label="正在載入 CU Bus" data-i18n-aria-label="loadingLabel">
         <div class="app-loader-visual" aria-hidden="true">
             <!-- <span class="app-loader-route"></span> -->
@@ -109,7 +110,7 @@
         </div>
         <strong>CU Bus</strong>
         <span class="app-loader-progress" aria-hidden="true"><i></i></span>
-        <span class="app-loader-status-text" data-i18n="loadingText">正在載入</span>
+        <span class="app-loader-status-text" data-i18n="loadingAppFiles">正在載入應用程式檔案…</span>
     </div>
 
     <canvas class="ambient-canvas" aria-hidden="true"></canvas>
@@ -124,7 +125,7 @@
 
     <div class="page-shell">
         <header class="site-header">
-            <a class="brand brand-home" href="./" aria-label="返回校巴證製作首頁" data-i18n-aria-label="homeLabel">
+            <a class="brand brand-home" href="./" tabindex="0" aria-label="返回校巴證製作首頁" data-i18n-aria-label="homeLabel">
                 <span class="brand-mark" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
                         <path d="M5.5 16.5h13V8.2c0-2-1.5-3.7-3.5-3.9L8.3 3.6a2.6 2.6 0 0 0-2.8 2.6v10.3Z" />
@@ -139,16 +140,16 @@
 
             <div class="header-meta">
                 <span class="step-pill" role="status" aria-live="polite" aria-atomic="true"><b class="current-step">01</b> /03</span>
-                <button class="edit-link" type="button" hidden>
+                <button class="edit-link" type="button" tabindex="0" hidden>
                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 16 7.5l-8.8 8.8L3 17l.7-4.2L12.5 4ZM10.8 5.7l3.5 3.5" /></svg>
                     <span data-i18n="rebuild">重新製作</span>
                 </button>
                 <span class="unofficial-badge" data-i18n="unofficial">非官方工具</span>
-                <button class="network-update-button" type="button" data-state="online" aria-label="目前在線，檢查是否有更新">
+                <button class="network-update-button" type="button" tabindex="0" data-state="online" aria-label="目前在線，檢查是否有更新">
                     <span class="network-status-dot" aria-hidden="true"></span>
                     <span class="network-status-label" aria-live="polite">在線</span>
                 </button>
-                <button class="language-toggle header-language-toggle" type="button" aria-label="Switch to English">EN</button>
+                <button class="language-toggle header-language-toggle" type="button" tabindex="0" aria-label="Switch to English">EN</button>
             </div>
         </header>
 
@@ -164,17 +165,17 @@
                             <fieldset class="permit-type">
                                 <legend data-i18n="busTypeLegend">想乘搭哪種校巴？</legend>
                                 <div class="type-options">
-                                    <input id="student" name="Type" type="radio" value="Transit" checked>
+                                    <input id="student" name="Type" type="radio" value="Transit" tabindex="0" checked>
                                     <label for="student">
                                         <span class="type-icon" aria-hidden="true">01</span>
-                                        <span><strong data-i18n="transitTitle">穿梭校巴</strong><small data-i18n="transitSub">校園穿梭路線</small></span>
+                                        <span><strong data-i18n="transitTitle">穿梭校巴</strong><small data-i18n="transitSub">1、2、3、4、8、N、H</small></span>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="m8 12 2.6 2.6L16.5 9" /></svg>
                                     </label>
 
-                                    <input id="admin" name="Type" type="radio" value="Lesson">
+                                    <input id="admin" name="Type" type="radio" value="Lesson" tabindex="-1">
                                     <label for="admin">
                                         <span class="type-icon" aria-hidden="true">02</span>
-                                        <span><strong data-i18n="lessonTitle">轉堂校巴</strong><small data-i18n="lessonSub">課堂接駁路線</small></span>
+                                        <span><strong data-i18n="lessonTitle">轉堂校巴</strong><small data-i18n="lessonSub">5、6A、6B、7</small></span>
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="m8 12 2.6 2.6L16.5 9" /></svg>
                                     </label>
                                 </div>
@@ -183,19 +184,19 @@
                             <div class="form-fields">
                                 <label class="field field-wide">
                                     <span><span data-i18n="nameLabel">姓名</span> <em data-i18n="required">必填</em></span>
-                                    <input placeholder="例如：CHAN Siu-ming（陳小明）" data-i18n-placeholder="namePlaceholder" name="Name" type="text" maxlength="30" autocomplete="name" required>
+                                    <input placeholder="例如：CHAN Siu-ming（陳小明）" data-i18n-placeholder="namePlaceholder" name="Name" type="text" tabindex="0" maxlength="30" autocomplete="name" required>
                                 </label>
                                 <label class="field">
                                     <span><span data-i18n="sidLabel">學生編號</span> <small lang="en">SID</small></span>
-                                    <input placeholder="例如：1155125528" data-i18n-placeholder="sidPlaceholder" name="SID" type="number" min="1000000000" max="1500000000" inputmode="numeric">
+                                    <input placeholder="例如：1155125528" data-i18n-placeholder="sidPlaceholder" name="SID" type="number" tabindex="0" min="1000000000" max="1500000000" inputmode="numeric">
                                 </label>
                                 <label class="field">
                                     <span><span data-i18n="majorLabel">主修科目</span> <small lang="en">Major</small></span>
-                                    <input placeholder="例如：Fine Arts" data-i18n-placeholder="majorPlaceholder" name="Major" type="text" maxlength="50">
+                                    <input placeholder="例如：Fine Arts" data-i18n-placeholder="majorPlaceholder" name="Major" type="text" tabindex="0" maxlength="50">
                                 </label>
                                 <label class="field field-wide">
                                     <span><span data-i18n="validLabel">有效期</span> <small data-i18n="validSub">Valid until</small></span>
-                                    <input name="Valid" type="date">
+                                    <input name="Valid" type="date" tabindex="0">
                                 </label>
                             </div>
 
@@ -204,7 +205,7 @@
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.5 8V6.5a3.5 3.5 0 0 1 7 0V8M5 8h10v8H5V8Z" /></svg>
                                     <span data-i18n="privacy">只輸入你願意顯示於校巴證上的資料</span>
                                 </p>
-                                <button class="generate-button" type="submit">
+                                <button class="generate-button" type="submit" tabindex="0">
                                     <span data-i18n="generate">開始繪製</span>
                                     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M12 6l4 4-4 4" /></svg>
                                 </button>
@@ -236,19 +237,19 @@
                             <strong>CU Bus App</strong>
                         </div>
                         <div class="app-promo-destination">
-                            <a class="website-destination open-app-destination" data-platform="android" href="https://cu-bus.online/open-app" aria-label="在已安裝的裝置開啟 CU Bus" data-i18n-aria-label="openApp" hidden>
+                            <a class="website-destination open-app-destination" data-platform="android" href="https://cu-bus.online/open-app" tabindex="0" aria-label="在已安裝的裝置開啟 CU Bus" data-i18n-aria-label="openApp" hidden>
                                 <svg class="website-destination-icon" viewBox="0 0 20 20" aria-hidden="true">
                                     <path d="M7 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V13M10 10l6-6M11.5 4H16v4.5" />
                                 </svg>
                                 <span data-i18n="openAppText">開啟 App</span>
                             </a>
-                            <a class="store-badge store-badge-apple" data-platform="ios" href="https://apps.apple.com/us/app/cu-bus/id6736944558" target="_blank" rel="noopener" aria-label="在 App Store 下載 CU Bus" data-i18n-aria-label="downloadIos" hidden>
+                            <a class="store-badge store-badge-apple" data-platform="ios" href="https://apps.apple.com/us/app/cu-bus/id6736944558" target="_blank" rel="noopener" tabindex="0" aria-label="在 App Store 下載 CU Bus" data-i18n-aria-label="downloadIos" hidden>
                                 <img src="app-store-badge.svg" alt="Download on the App Store">
                             </a>
-                            <a class="store-badge store-badge-google" data-platform="android" href="https://play.google.com/store/apps/details?id=com.cubus.app" target="_blank" rel="noopener" aria-label="在 Google Play 下載 CU Bus" data-i18n-aria-label="downloadAndroid" hidden>
+                            <a class="store-badge store-badge-google" data-platform="android" href="https://play.google.com/store/apps/details?id=com.cubus.app" target="_blank" rel="noopener" tabindex="0" aria-label="在 Google Play 下載 CU Bus" data-i18n-aria-label="downloadAndroid" hidden>
                                 <img src="google-play-badge.png" alt="Get it on Google Play">
                             </a>
-                            <a class="website-destination" data-platform="web" href="https://cu-bus.online/" target="_blank" rel="noopener" aria-label="前往 CU Bus 網站" data-i18n-aria-label="visitWebsite">
+                            <a class="website-destination" data-platform="web" href="https://cu-bus.online/" target="_blank" rel="noopener" tabindex="0" aria-label="前往 CU Bus 網站" data-i18n-aria-label="visitWebsite">
                                 <svg class="website-destination-icon" viewBox="0 0 20 20" aria-hidden="true">
                                     <path d="M4 13V7.3C4 5.5 5.4 4 7.2 4h5.6C14.6 4 16 5.5 16 7.3V13M4 9h12M6.5 13v1M13.5 13v1" />
                                     <circle cx="6.5" cy="14.5" r="1.5" /><circle cx="13.5" cy="14.5" r="1.5" />
@@ -295,7 +296,7 @@
     </div>
 
     <div class="fullscreen-preview" id="fullscreen-preview" role="dialog" aria-modal="true" aria-label="校巴證全螢幕預覽" data-i18n-aria-label="fullscreenLabel" tabindex="-1" hidden>
-        <button class="fullscreen-close" type="button" aria-label="關閉全螢幕預覽" data-i18n-aria-label="closeFullscreen">
+        <button class="fullscreen-close" type="button" tabindex="0" aria-label="關閉全螢幕預覽" data-i18n-aria-label="closeFullscreen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
         </button>
         <div class="fullscreen-card-mount card-mount"></div>
@@ -310,7 +311,10 @@
         <div class="update-progress is-hidden" role="progressbar" aria-label="更新進度" data-i18n-aria-label="updateProgressLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-hidden="true">
             <span class="update-progress-fill"></span>
         </div>
-        <button class="update-dialog-close" type="button" data-i18n="closeUpdate">關閉</button>
+        <div class="update-dialog-actions">
+            <button class="update-dialog-reload" type="button" tabindex="0" data-i18n="reloadLatest" hidden>重新載入最新內容</button>
+            <button class="update-dialog-close" type="button" tabindex="0" data-i18n="closeUpdate">關閉</button>
+        </div>
     </dialog>
 
     <div class="card-scaler" aria-hidden="true">

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
@@ -12,6 +13,7 @@ const script = read('script.js');
 const styles = `${read('style.css')}\n${read('spa.css')}`;
 const saveCardStyles = read('savecard/style.css');
 const worker = read('service-worker.js');
+const htaccess = read('.htaccess');
 const printStart = styles.indexOf('@media print');
 const printStyles = printStart >= 0 ? styles.slice(printStart) : '';
 
@@ -53,6 +55,19 @@ test('all three SPA steps and required actions remain present', () => {
     assert.match(script, /siteFooter\.hidden = viewName !== 'form'/);
 });
 
+test('bus-type options list the same routes printed on each permit', () => {
+    const transitRoutes = [...html.matchAll(/<span class="transit"[^>]*>([^<]+)<\/span>/g)]
+        .map((match) => match[1].trim());
+    const lessonRoutes = [...html.matchAll(/<span class="lesson"[^>]*>([^<]+)<\/span>/g)]
+        .map((match) => match[1].trim());
+    assert.deepEqual(transitRoutes, ['1', '2', '3', '4', '8', 'N', 'H']);
+    assert.deepEqual(lessonRoutes, ['5', '6A', '6B', '7']);
+    assert.match(html, /data-i18n="transitSub">1、2、3、4、8、N、H<\/small>/);
+    assert.match(html, /data-i18n="lessonSub">5、6A、6B、7<\/small>/);
+    assert.match(script, /transitTitle: 'Shuttle Bus', transitSub: '1, 2, 3, 4, 8, N, H'/);
+    assert.match(script, /lessonTitle: 'Meet-Class Bus', lessonSub: '5, 6A, 6B, 7'/);
+});
+
 test('iOS Safari can promote the native CU Bus app', () => {
     assert.match(html, /<meta name="apple-itunes-app" content="app-id=6736944558">/);
     assert.match(html, /href="https:\/\/apps\.apple\.com\/us\/app\/cu-bus\/id6736944558"/);
@@ -74,21 +89,30 @@ test('mobile app banner avoids Safari compositing shadows', () => {
 test('online status and manual update flow remain accessible', () => {
     assert.match(html, /class="network-update-button"[^>]*data-state="online"/);
     assert.match(html, /class="update-dialog"[^>]*aria-labelledby="update-dialog-title"[^>]*aria-describedby="update-dialog-message"/);
+    assert.match(html, /class="update-dialog-reload"[^>]*data-i18n="reloadLatest"[^>]*hidden>重新載入最新內容<\/button>/);
     assert.match(html, /class="update-progress[^"]*" role="progressbar"[^>]*aria-valuenow="0"/);
     assert.match(script, /window\.addEventListener\('online', updateNetworkStatus\)/);
     assert.match(script, /window\.addEventListener\('offline', updateNetworkStatus\)/);
     assert.match(script, /fetch\(indexUrl, \{ cache: 'no-store' \}\)/);
     assert.match(script, /latestVersion === assetVersion/);
     assert.match(script, /cacheName\.startsWith\('cu-bus-permit-'\)/);
+    assert.match(script, /function setUpdateDialogBackgroundInert\(isInert\)[\s\S]*pageShell\.inert = isInert[\s\S]*setAttribute\('inert', ''\)[\s\S]*setAttribute\('aria-hidden', 'true'\)[\s\S]*removeAttribute\('inert'\)[\s\S]*removeAttribute\('aria-hidden'\)/);
+    assert.doesNotMatch(script, /event\.target === updateDialog\) closeUpdateDialog\(\)/);
+    assert.match(script, /updateDialogReturnFocus = activeElement instanceof HTMLElement[\s\S]*activeElement !== document\.body[\s\S]*:disabled[\s\S]*: networkUpdateButton[\s\S]*focusTarget\?\.isConnected[\s\S]*focusTarget\.focus/);
+    assert.match(script, /updateDialog\.addEventListener\('keydown'[\s\S]*event\.key !== 'Tab'[\s\S]*focusTargets\[nextIndex\]\.focus/);
+    assert.match(script, /async function reloadLatestContent\(\)[\s\S]*clearPermitCaches\(\)[\s\S]*registration\.unregister\(\)[\s\S]*window\.location\.reload\(\)/);
+    assert.match(script, /reloadLatest: 'Reload latest content'/);
     assert.match(script, /serviceWorker\.register\([\s\S]*encodeURIComponent\(latestVersion\)/);
     assert.match(worker, /type: 'CACHE_PROGRESS'/);
     assert.match(worker, /broadcastProgress\(completed, APP_SHELL\.length\)/);
     assert.match(styles, /\.update-dialog\[open\][\s\S]*animation: update-dialog-in/);
     assert.match(styles, /\.update-dialog\.is-closing::backdrop[\s\S]*animation: update-backdrop-out/);
-    assert.match(styles, /\.update-progress\.is-hidden[\s\S]*visibility: hidden/);
-    assert.match(styles, /\.update-dialog-close\.is-placeholder[\s\S]*visibility: hidden/);
+    assert.match(styles, /\.update-progress\.is-hidden\s*\{\s*display: none;/);
+    assert.match(styles, /\.update-dialog-actions\[hidden\]\s*\{\s*display: none;/);
+    assert.match(styles, /\.update-dialog-close\.is-placeholder\s*\{\s*display: none;/);
     assert.match(script, /updateProgress\.classList\.toggle\('is-hidden', !showProgress\)/);
     assert.match(script, /updateDialogClose\.classList\.toggle\('is-placeholder', !closable\)/);
+    assert.match(script, /updateDialogActions\.hidden = !closable && !showReload/);
     assert.match(script, /updateDialog\.classList\.add\('is-closing'\)/);
     assert.match(script, /event\.preventDefault\(\);[\s\S]*closeUpdateDialog\(\)/);
     assert.match(script, /siteHeader\.hidden = viewName !== 'form'/);
@@ -97,9 +121,15 @@ test('online status and manual update flow remain accessible', () => {
 
 test('startup waits for IndexedDB and every visible app image', () => {
     assert.match(html, /class="app-loader"/);
+    assert.match(html, /class="app-loader-status-text"[^>]*data-i18n="loadingAppFiles">正在載入應用程式檔案…<\/span>/);
+    assert.match(html, /\.app-loader-status-text \{[^}]*opacity: 0;[^}]*visibility: hidden;[^}]*animation: loader-status-reveal 200ms ease 1\.5s forwards;/);
+    assert.match(styles, /\.app-loader-status-text \{[\s\S]*animation: loader-status-reveal 200ms ease 1\.5s forwards;/);
     assert.match(script, /window\.indexedDB\.open\(databaseName, 1\)/);
     assert.match(script, /preloadStartupImages\(\)/);
     assert.match(script, /minimumStartupTime\(\)/);
+    assert.match(script, /function updateStartupStatus\(\)[\s\S]*loadingSavedAndImages[\s\S]*loadingSaved[\s\S]*loadingImages[\s\S]*loadingPreparing/);
+    assert.match(script, /trackStartupTask\('language',[\s\S]*trackStartupTask\('draft',[\s\S]*trackStartupTask\('images'/);
+    assert.match(script, /loadingAppFiles: 'Loading application files…'/);
     assert.doesNotMatch(script, /localStorage|sessionStorage|openDatabase\s*\(/i);
 
     for (const asset of [
@@ -121,7 +151,8 @@ test('permit draft and manually changed date remain persistent', () => {
     assert.match(script, /validDateChanged/);
     assert.match(script, /input: `\$\{year\}-07-31`/);
     assert.match(script, /display: `31\/7\/\$\{year\}`/);
-    assert.match(script, /defaultPermitExpiry\(today\)\.display/);
+    assert.match(script, /validInput\.value = defaultPermitExpiry\(today\)\.input/);
+    assert.match(script, /const defaultValid = defaultPermitExpiry\(\)\.display/);
 });
 
 test('mobile viewport and safe areas remain constrained', () => {
@@ -216,6 +247,20 @@ test('WCAG interaction structure and focus management remain present', () => {
 });
 
 test('WCAG motion, focus visibility, language, and status support remain present', () => {
+    for (const className of ['skip-link', 'brand brand-home', 'edit-link', 'network-update-button', 'language-toggle header-language-toggle', 'fullscreen-close', 'update-dialog-close']) {
+        assert.match(html, new RegExp(`class="${className}"[^>]*tabindex="0"`));
+    }
+    for (const platform of ['android', 'ios']) {
+        assert.match(html, new RegExp(`data-platform="${platform}"[^>]*tabindex="0"`));
+    }
+    assert.match(html, /class="generate-button"[^>]*type="submit"[^>]*tabindex="0"/);
+    assert.match(html, /class="website-destination"[^>]*data-platform="web"[^>]*tabindex="0"/);
+    assert.match(html, /id="student"[^>]*type="radio"[^>]*tabindex="0"[^>]*checked/);
+    assert.match(html, /id="admin"[^>]*type="radio"[^>]*tabindex="-1"/);
+    for (const fieldName of ['Name', 'SID', 'Major', 'Valid']) {
+        assert.match(html, new RegExp(`name="${fieldName}"[^>]*tabindex="0"`));
+    }
+    assert.match(script, /function updatePermitTypeTabStops\(\)[\s\S]*radio\.tabIndex = radio\.checked \? 0 : -1/);
     assert.match(styles, /\.skip-link:focus[\s\S]*transform: translateY\(0\)/);
     assert.match(styles, /\.field input:focus-visible[\s\S]*outline: 3px solid var\(--purple\)/);
     assert.match(styles, /\.fullscreen-close:focus-visible[\s\S]*outline: 3px solid var\(--gold\)/);
@@ -250,7 +295,16 @@ test('shared image rendering stays shadow-free', () => {
     const renderStart = script.indexOf('async function renderPermitImage');
     const renderEnd = script.indexOf('async function sharePermitImage');
     assert.ok(renderStart >= 0 && renderEnd > renderStart, 'share renderer is missing');
-    assert.doesNotMatch(script.slice(renderStart, renderEnd), /shadow(?:Blur|Color|OffsetX|OffsetY)\s*=/);
+    const renderer = script.slice(renderStart, renderEnd);
+    assert.match(script, /function clonePermitForImage\(\)[\s\S]*card\.cloneNode\(true\)[\s\S]*copyRenderedStyles\(card, permit\)/);
+    assert.match(renderer, /clonePermitForImage\(\)/);
+    assert.match(renderer, /new XMLSerializer\(\)\.serializeToString\(permit\)/);
+    assert.match(renderer, /<foreignObject/);
+    assert.match(renderer, /canvas\.toBlob/);
+    assert.doesNotMatch(renderer, /fillText|fillRect|createLinearGradient|drawSpacedText|roundedRectangle|routeSets/);
+    assert.doesNotMatch(script, /card\.style\.background\s*=/);
+    assert.match(script, /function downloadPermitImage\(blob\)/);
+    assert.match(script, /if \(error\?\.name === 'AbortError'\) throw error;[\s\S]*downloadPermitImage\(blob\)/);
 });
 
 test('service worker supports offline use and deterministic updates', () => {
@@ -278,5 +332,32 @@ test('service worker supports offline use and deterministic updates', () => {
     ]) {
         assert.match(worker, new RegExp(asset.replaceAll('.', '\\.')));
         assert.ok(existsSync(new URL(`../${asset}`, import.meta.url)), `${asset} is missing`);
+    }
+});
+
+test('Apache sends restrictive security headers without blocking app features', () => {
+    assert.match(htaccess, /Header always set X-Frame-Options "DENY"/);
+    assert.match(htaccess, /Header always set X-Content-Type-Options "nosniff"/);
+    assert.match(htaccess, /Header always set Referrer-Policy "strict-origin-when-cross-origin"/);
+    assert.match(htaccess, /Header always set Permissions-Policy "[^"]*camera=\(\)[^"]*clipboard-write=\(self\)[^"]*web-share=\(self\)/);
+
+    const csp = htaccess.match(/Header always set Content-Security-Policy "([^"]+)"/)?.[1];
+    assert.ok(csp, 'Content-Security-Policy header is missing');
+    assert.match(csp, /default-src 'self'/);
+    assert.match(csp, /object-src 'none'/);
+    assert.match(csp, /frame-ancestors 'none'/);
+    assert.match(csp, /script-src 'self'/);
+    assert.doesNotMatch(csp, /script-src[^;]*'unsafe-(?:inline|eval)'/);
+    assert.match(csp, /style-src 'self' 'unsafe-inline'/);
+    assert.match(csp, /worker-src 'self'/);
+    assert.match(csp, /upgrade-insecure-requests/);
+
+    for (const file of ['index.html', 'generating/index.html', 'savecard/index.html', 'getcard/index.html']) {
+        const document = read(file);
+        const inlineScripts = [...document.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
+        for (const [, source] of inlineScripts) {
+            const hash = createHash('sha256').update(source).digest('base64');
+            assert.ok(csp.includes(`'sha256-${hash}'`), `${file} has an inline script missing from CSP`);
+        }
     }
 });

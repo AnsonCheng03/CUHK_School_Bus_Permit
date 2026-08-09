@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'cu-bus-permit-';
-const RELEASE_VERSION = '20260809141500';
+const RELEASE_VERSION = '20260809200000';
 const CACHE_NAME = `${CACHE_PREFIX}${RELEASE_VERSION}`;
 const APP_SHELL = [
     './',
