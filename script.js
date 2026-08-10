@@ -126,7 +126,7 @@ const translations = {
         qrAlt: '前往 cu-bus.online 的 QR code', scanWebsite: '掃描瀏覽網站', actionsLabel: '校巴證操作',
         previewButton: '預覽', editButton: '編輯', shareButton: '分享圖片', printButton: '列印',
         previewActionLabel: '開啟校巴證全螢幕預覽', editActionLabel: '編輯校巴證資料', shareActionLabel: '分享或下載校巴證圖片', printActionLabel: '列印校巴證',
-        footerCommunity: '為中大社群而製作', footerUnofficial: '此工具並非由香港中文大學官方提供', fullscreenLabel: '校巴證全螢幕預覽', closeFullscreen: '關閉全螢幕預覽',
+        developerProfiles: '開發者社交平台', developerInstagram: '在 Instagram 查看開發者 Anson Cheng', developerGithub: '在 GitHub 查看開發者 Anson Cheng', fullscreenLabel: '校巴證全螢幕預覽', closeFullscreen: '關閉全螢幕預覽',
         stepForm: '第 1 步，共 3 步：輸入校巴證資料', stepCreating: '第 2 步，共 3 步：正在繪製校巴證', stepPreview: '第 3 步，共 3 步：預覽校巴證',
         creatingStatus: '正在繪製校巴證，完成後會自動前往預覽。', previewStatus: '校巴證已完成。你可以翻轉校巴證、預覽、編輯、分享或列印。',
         showBack: '查看校巴證乘車須知', showFront: '翻回校巴證正面', shareWorking: '正在製作分享圖片', shareSaved: '圖片已儲存', shareFailed: '未能分享圖片', shareTitle: '中大校巴證',
@@ -146,7 +146,7 @@ const translations = {
         qrAlt: 'QR code for cu-bus.online', scanWebsite: 'Scan to visit', actionsLabel: 'Permit actions',
         previewButton: 'Preview', editButton: 'Edit', shareButton: 'Share image', printButton: 'Print',
         previewActionLabel: 'Open full-screen permit preview', editActionLabel: 'Edit permit details', shareActionLabel: 'Share or download permit image', printActionLabel: 'Print permit',
-        footerCommunity: 'Made for the CUHK community', footerUnofficial: 'This tool is not officially provided by CUHK', fullscreenLabel: 'Full-screen permit preview', closeFullscreen: 'Close full-screen preview',
+        developerProfiles: 'Developer social profiles', developerInstagram: 'View developer Anson Cheng on Instagram', developerGithub: 'View developer Anson Cheng on GitHub', fullscreenLabel: 'Full-screen permit preview', closeFullscreen: 'Close full-screen preview',
         stepForm: 'Step 1 of 3: Enter permit details', stepCreating: 'Step 2 of 3: Creating permit', stepPreview: 'Step 3 of 3: Preview permit',
         creatingStatus: 'Creating your permit. The preview will open automatically when it is ready.', previewStatus: 'Your permit is ready. You can flip, preview, edit, share, or print it.',
         showBack: 'View passenger notice', showFront: 'Return to the permit front', shareWorking: 'Creating share image', shareSaved: 'Image saved', shareFailed: 'Unable to share image', shareTitle: 'CUHK School Bus Permit',
@@ -941,6 +941,31 @@ function resizeCard() {
     document.documentElement.style.setProperty('--card-scale', scale.toFixed(3));
 }
 
+let viewportSyncFrame;
+
+function syncAppViewport() {
+    const viewport = window.visualViewport;
+    const viewportHeight = Math.max(1, Math.min(
+        window.innerHeight || Number.POSITIVE_INFINITY,
+        viewport?.height || window.innerHeight || document.documentElement.clientHeight
+    ));
+    const viewportWidth = Math.max(1, Math.min(
+        window.innerWidth || Number.POSITIVE_INFINITY,
+        viewport?.width || window.innerWidth || document.documentElement.clientWidth
+    ));
+    const rootStyle = document.documentElement.style;
+    rootStyle.setProperty('--app-viewport-height', `${viewportHeight}px`);
+    rootStyle.setProperty('--app-viewport-width', `${viewportWidth}px`);
+    rootStyle.setProperty('--app-viewport-top', `${Math.max(0, viewport?.offsetTop || 0)}px`);
+    rootStyle.setProperty('--app-viewport-left', `${Math.max(0, viewport?.offsetLeft || 0)}px`);
+    resizeCard();
+}
+
+function scheduleAppViewportSync() {
+    window.cancelAnimationFrame(viewportSyncFrame);
+    viewportSyncFrame = window.requestAnimationFrame(syncAppViewport);
+}
+
 function populateForm(params) {
     ['Name', 'SID', 'Major'].forEach((name) => {
         const input = form.elements.namedItem(name);
@@ -1177,19 +1202,30 @@ async function clonePermitForImage() {
     const permit = card.cloneNode(true);
     copyRenderedStyles(card, permit);
     permit.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
-    permit.style.setProperty('background-image', 'none', 'important');
     permit.style.setProperty('box-shadow', 'none', 'important');
     permit.style.setProperty('cursor', 'default', 'important');
     permit.style.setProperty('overflow', 'hidden', 'important');
 
     const sourceImages = [...card.querySelectorAll('img')];
     const clonedImages = [...permit.querySelectorAll('img')];
-    await Promise.all(sourceImages.map(async (source, index) => {
+    const embeddedSources = await Promise.all(sourceImages.map((source) => (
+        imageSourceAsDataUrl(source.currentSrc || source.src)
+    )));
+    embeddedSources.forEach((source, index) => {
         const clone = clonedImages[index];
         clone.removeAttribute('srcset');
         clone.removeAttribute('loading');
-        clone.src = await imageSourceAsDataUrl(source.currentSrc || source.src);
-    }));
+        clone.src = source;
+    });
+
+    const artworkIndex = sourceImages.indexOf(cardArtwork);
+    const artworkSource = embeddedSources[artworkIndex];
+    if (artworkSource) {
+        permit.style.setProperty('background-image', `url("${artworkSource}")`, 'important');
+        permit.style.setProperty('background-position', 'center', 'important');
+        permit.style.setProperty('background-repeat', 'no-repeat', 'important');
+        permit.style.setProperty('background-size', 'cover', 'important');
+    }
     return permit;
 }
 
@@ -1547,8 +1583,10 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-window.addEventListener('resize', resizeCard, { passive: true });
-window.visualViewport?.addEventListener('resize', resizeCard, { passive: true });
+window.addEventListener('resize', scheduleAppViewportSync, { passive: true });
+window.addEventListener('orientationchange', scheduleAppViewportSync, { passive: true });
+window.visualViewport?.addEventListener('resize', scheduleAppViewportSync, { passive: true });
+window.visualViewport?.addEventListener('scroll', scheduleAppViewportSync, { passive: true });
 window.addEventListener('popstate', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const viewName = urlParams.get('step');
@@ -1590,6 +1628,7 @@ function registerServiceWorker() {
 }
 
 async function initialize() {
+    syncAppViewport();
     drawAmbient();
     updateStartupStatus();
     const [storedLanguage, storedDraft] = await Promise.all([

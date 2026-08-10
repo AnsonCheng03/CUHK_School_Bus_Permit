@@ -1654,11 +1654,11 @@ body.discarding-card .app-promo {
 .fullscreen-preview {
     position: fixed;
     z-index: 1000;
-    inset: 0;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100svh;
+    top: var(--app-viewport-top, 0px);
+    left: var(--app-viewport-left, 0px);
+    width: var(--app-viewport-width, 100vw);
+    height: var(--app-viewport-height, 100dvh);
+    min-height: 0;
     display: grid;
     place-items: center;
     padding:
@@ -1735,18 +1735,21 @@ body.discarding-card .app-promo {
 body[data-view="creating"],
 body[data-view="preview"],
 body.fullscreen-open {
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100svh;
+    width: var(--app-viewport-width, 100vw);
+    height: var(--app-viewport-height, 100dvh);
+    min-height: 0;
     overflow: hidden;
 }
 
 body[data-view="creating"] .page-shell,
 body[data-view="preview"] .page-shell {
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 100svh;
+    position: fixed;
+    top: var(--app-viewport-top, 0px);
+    left: var(--app-viewport-left, 0px);
+    width: var(--app-viewport-width, 100vw);
+    height: var(--app-viewport-height, 100dvh);
+    min-height: 0;
+    margin: 0;
 }
 
 body[data-view="creating"] .spa-stage,
@@ -1944,6 +1947,7 @@ body[data-view="preview"] .page-shell {
         width: 100% !important;
     }
     .page-shell {
+        position: static !important;
         width: 100% !important;
         height: auto !important;
         min-height: 0 !important;

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const read = (file) => readFileSync(new URL(`../${file}`, import.meta.url), 'utf8');
 const html = read('index.html');
+const saveCardHtml = read('savecard/index.html');
 const script = read('script.js');
 const styles = `${read('style.css')}\n${read('spa.css')}`;
 const saveCardStyles = read('savecard/style.css');
@@ -53,6 +54,24 @@ test('all three SPA steps and required actions remain present', () => {
     assert.match(styles, /\.type-options svg[\s\S]*fill: none[\s\S]*stroke-width: 1\.8/);
     assert.match(script, /siteHeader\.hidden = viewName !== 'form'/);
     assert.match(script, /siteFooter\.hidden = viewName !== 'form'/);
+});
+
+test('footer presents the full bilingual disclaimer and accessible developer profiles', () => {
+    const disclaimerOpening = 'The bus pass provided on this website is a creative work intended solely for entertainment purposes';
+    const chineseOpening = '本網站所展示的校巴證僅為創作作品';
+    for (const page of [html, saveCardHtml]) {
+        assert.match(page, new RegExp(disclaimerOpening));
+        assert.match(page, new RegExp(chineseOpening));
+        assert.match(page, /href="https:\/\/www\.instagram\.com\/ac\.0303_\/"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+        assert.match(page, /href="https:\/\/github\.com\/AnsonCheng03"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+        assert.match(page, /class="footer-developer"[\s\S]*<svg[^>]*aria-hidden="true"[^>]*focusable="false"/);
+        assert.doesNotMatch(page, /footer-developer[\s\S]*<img[^>]+(?:instagram|github)/i);
+    }
+    assert.match(styles, /\.footer-developer a:focus-visible[\s\S]*outline:/);
+    assert.match(styles, /html\[lang="zh-HK"\] \.footer-disclaimer p\[lang="en"\],[\s\S]*html\[lang="en"\] \.footer-disclaimer p\[lang="zh-HK"\][\s\S]*display: none;/);
+    assert.match(script, /document\.documentElement\.lang = currentLanguage === 'en' \? 'en' : 'zh-HK'/);
+    assert.match(script, /developerInstagram: 'View developer Anson Cheng on Instagram'/);
+    assert.match(script, /developerGithub: 'View developer Anson Cheng on GitHub'/);
 });
 
 test('bus-type options list the same routes printed on each permit', () => {
@@ -171,7 +190,11 @@ test('mobile viewport and safe areas remain constrained', () => {
     assert.match(styles, /::-webkit-datetime-edit[\s\S]*line-height: 46px/);
     assert.match(styles, /::-webkit-datetime-edit[\s\S]*justify-content: flex-start/);
     assert.match(script, /Math\.max\(1, mount\.clientWidth - 24\)/);
-    assert.match(script, /visualViewport\?\.addEventListener\('resize', resizeCard/);
+    assert.match(script, /function syncAppViewport\(\)[\s\S]*Math\.min\([\s\S]*window\.innerHeight[\s\S]*viewport\?\.height[\s\S]*--app-viewport-height[\s\S]*--app-viewport-top/);
+    assert.match(script, /visualViewport\?\.addEventListener\('resize', scheduleAppViewportSync/);
+    assert.match(script, /visualViewport\?\.addEventListener\('scroll', scheduleAppViewportSync/);
+    assert.match(styles, /body\[data-view="creating"\] \.page-shell,[\s\S]*position: fixed;[\s\S]*top: var\(--app-viewport-top[\s\S]*height: var\(--app-viewport-height/);
+    assert.match(printStyles, /\.page-shell \{[\s\S]*position: static !important;/);
 });
 
 test('card generation and completion animations do not regress', () => {
@@ -297,12 +320,15 @@ test('shared image rendering stays shadow-free', () => {
     assert.ok(renderStart >= 0 && renderEnd > renderStart, 'share renderer is missing');
     const renderer = script.slice(renderStart, renderEnd);
     assert.match(script, /function clonePermitForImage\(\)[\s\S]*card\.cloneNode\(true\)[\s\S]*copyRenderedStyles\(card, permit\)/);
+    assert.match(script, /const embeddedSources = await Promise\.all\([\s\S]*imageSourceAsDataUrl\(source\.currentSrc \|\| source\.src\)/);
+    assert.match(script, /sourceImages\.indexOf\(cardArtwork\)[\s\S]*permit\.style\.setProperty\('background-image', `url\("\$\{artworkSource\}"\)`, 'important'\)[\s\S]*background-size', 'cover'/);
     assert.match(renderer, /clonePermitForImage\(\)/);
     assert.match(renderer, /new XMLSerializer\(\)\.serializeToString\(permit\)/);
     assert.match(renderer, /<foreignObject/);
     assert.match(renderer, /canvas\.toBlob/);
     assert.doesNotMatch(renderer, /fillText|fillRect|createLinearGradient|drawSpacedText|roundedRectangle|routeSets/);
     assert.doesNotMatch(script, /card\.style\.background\s*=/);
+    assert.doesNotMatch(script, /permit\.style\.setProperty\('background-image', 'none'/);
     assert.match(script, /function downloadPermitImage\(blob\)/);
     assert.match(script, /if \(error\?\.name === 'AbortError'\) throw error;[\s\S]*downloadPermitImage\(blob\)/);
 });
